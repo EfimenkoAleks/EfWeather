@@ -9,10 +9,18 @@
 import UIKit
 
 protocol AssemlyBuilderProtocol {
-    
+    func createMainController(router: RouterProtocol) -> UIViewController
 }
 
 class AssemlyBilder: AssemlyBuilderProtocol {
+    func createMainController(router: RouterProtocol) -> UIViewController {
+        let view = MainViewController()
+        let networkService = NetWorkService()
+        let viewModel = MainViewModel(router: router, netWorkService: networkService)
+        view.viewModel = viewModel
+        return view
+    }
+    
 
 }
 

@@ -9,19 +9,25 @@
 import Foundation
 
 protocol NetWorkServiceProtocol {
-    func getWeather(city: String, completion: @escaping(Data?) -> Void)
+    func getWeather(lat: String, lon: String, completion: @escaping (WeatherData?) -> Void)
 }
 
 class NetWorkService: NetWorkServiceProtocol {
     
-    func getWeather(city: String, completion: @escaping (Data?) -> Void) {
+    func getWeather(lat: String, lon: String, completion: @escaping (WeatherData?) -> Void) {
      
-         let appid = "&appid=9235dd62d3f74c7814a8a04526e91cab"
-         let q = "q=" + city + "&"
+         let appid = "appid=9235dd62d3f74c7814a8a04526e91cab"
+         let lat = lat + "&"
+        let lon = lon + "&"
+        let exclud = "minutely,alerts&"
         let unit = "units=metric&"
-         let lang = "&lang=ru"
- // http://api.openweathermap.org/data/2.5/weather?q=Днепр&units=metric&&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab
-         let request = NSMutableURLRequest(url: NSURL(string: "http://api.openweathermap.org/data/2.5/weather?" + q + unit + lang + appid)! as URL,
+         let lang = "lang=ru&"
+ 
+// https://api.openweathermap.org/data/2.5/onecall?lat=37.331676&lon=72.030189&exclude=minutely&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab
+        
+ // "https://api.openweathermap.org/data/2.5/onecall?" + lat + lon + exclud + unit + lang + appid
+        
+         let request = NSMutableURLRequest(url: NSURL(string: "https://api.openweathermap.org/data/2.5/onecall?lat=37.331676&lon=72.030189&exclude=minutely&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab")! as URL,
                                            cachePolicy: .useProtocolCachePolicy,
                                            timeoutInterval: 10.0)
          request.httpMethod = "GET"
@@ -31,7 +37,10 @@ class NetWorkService: NetWorkServiceProtocol {
              if (error != nil) {
                  print(error ?? "error")
              } else {
-                 completion(data)
+                guard let dataRez = data else { return }
+                let parsedResult: WeatherData = try! JSONDecoder().decode(WeatherData.self, from: dataRez)
+                print("\(parsedResult)")
+                 completion(parsedResult)
              }
          })
          

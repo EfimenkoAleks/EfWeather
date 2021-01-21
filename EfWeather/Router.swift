@@ -14,11 +14,8 @@ protocol RouterMain {
 }
 
 protocol RouterProtocol: RouterMain {
-//    func initialViewController()
-//    func showListNews(serch: String?, country: String?, category: String?, language: String?, indexRequest: Int)
-//    func showWebNews(newStr: SqlNewsModel)
+    func initialViewController()
 //    func showDetail(comment: Comment?)
-//    func showLeague(country: String)
 //    func popToRoot()
 }
 
@@ -34,6 +31,8 @@ class Router: RouterProtocol {
 
     func initialViewController() {
         if let navigationController = navigationController {
+            guard let mainController = assemblyBuilder?.createMainController(router: self) else {return}
+            navigationController.viewControllers = [mainController]
         }
     }
 
