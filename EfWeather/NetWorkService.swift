@@ -15,19 +15,12 @@ protocol NetWorkServiceProtocol {
 class NetWorkService: NetWorkServiceProtocol {
     
     func getWeather(lat: String, lon: String, completion: @escaping (WeatherData?) -> Void) {
-     
-         let appid = "appid=9235dd62d3f74c7814a8a04526e91cab"
-         let lat = lat + "&"
-        let lon = lon + "&"
-        let exclud = "minutely,alerts&"
-        let unit = "units=metric&"
-         let lang = "lang=ru&"
- 
-// https://api.openweathermap.org/data/2.5/onecall?lat=37.331676&lon=72.030189&exclude=minutely&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab
+
+         let curentlat = "lat=" + lat + "&"
+        let curentlon = "lon=" + lon + "&"
+ let requestStr = "https://api.openweathermap.org/data/2.5/onecall?" + curentlat + curentlon + "exclude=minutely&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab"
         
- // "https://api.openweathermap.org/data/2.5/onecall?" + lat + lon + exclud + unit + lang + appid
-        
-         let request = NSMutableURLRequest(url: NSURL(string: "https://api.openweathermap.org/data/2.5/onecall?lat=37.331676&lon=72.030189&exclude=minutely&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab")! as URL,
+         let request = NSMutableURLRequest(url: NSURL(string: requestStr)! as URL,
                                            cachePolicy: .useProtocolCachePolicy,
                                            timeoutInterval: 10.0)
          request.httpMethod = "GET"

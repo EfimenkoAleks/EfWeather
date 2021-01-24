@@ -15,61 +15,60 @@ class HorizontalCell: UICollectionViewCell {
     
     var bgView: UIView = {
         let bg = UIView()
-        bg.backgroundColor = #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1)
+        bg.backgroundColor = .clear
         bg.translatesAutoresizingMaskIntoConstraints = false
         return bg
     }()
     
     var weatherImageView: UIImageView = {
-          let imageView = UIImageView()
-        imageView.backgroundColor = .purple
-          imageView.image = UIImage(named: "ic_white_day_cloudy")
-          imageView.translatesAutoresizingMaskIntoConstraints = false
-//          imageView.layer.masksToBounds = true
-//        imageView.layer.borderWidth = 1
-          imageView.contentMode = .scaleAspectFit
-          return imageView
-      }()
-      
-      var timeLabel: UILabel = {
-          let lb = UILabel()
-          lb.textAlignment = .center
-          lb.font = UIFont.systemFont(ofSize: 17)
-        lb.text = "9:00"
-        lb.backgroundColor = .red
-          lb.layer.cornerRadius = 6
-          lb.layer.masksToBounds = true
-          lb.numberOfLines = 1
-          lb.translatesAutoresizingMaskIntoConstraints = false
-          return lb
-      }()
+        let imageView = UIImageView()
+        imageView.backgroundColor = .clear
+        imageView.image = UIImage(named: "ic_white_day_cloudy")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    var timeLabel: UILabel = {
+        let lb = UILabel()
+        lb.textAlignment = .right
+        lb.font = UIFont.systemFont(ofSize: 22)
+        lb.text = "14"
+        lb.textColor = Helper.shared.hexStringToUIColor(hex: "#FFFFFF")
+        lb.backgroundColor = .clear
+        lb.numberOfLines = 1
+        lb.translatesAutoresizingMaskIntoConstraints = false
+        return lb
+    }()
+    
+    var timeMinLabel: UILabel = {
+        let lb = UILabel()
+        lb.textAlignment = .left
+        lb.font = UIFont.systemFont(ofSize: 15)
+        lb.text = "00"
+        lb.backgroundColor = .clear
+        lb.textColor = Helper.shared.hexStringToUIColor(hex: "#FFFFFF")
+        lb.numberOfLines = 1
+        lb.translatesAutoresizingMaskIntoConstraints = false
+        return lb
+    }()
     
     var tempLabel: UILabel = {
-              let lb = UILabel()
-              lb.textAlignment = .center
-              lb.font = UIFont.systemFont(ofSize: 17)
+        let lb = UILabel()
+        lb.textAlignment = .center
+        lb.font = UIFont.systemFont(ofSize: 22)
         lb.text = "25"
-            lb.backgroundColor = .green
-              lb.layer.cornerRadius = 6
-              lb.layer.masksToBounds = true
-              lb.numberOfLines = 1
-              lb.translatesAutoresizingMaskIntoConstraints = false
-              return lb
-          }()
+        lb.textColor = Helper.shared.hexStringToUIColor(hex: "#FFFFFF")
+        lb.backgroundColor = .clear
+        lb.numberOfLines = 1
+        lb.translatesAutoresizingMaskIntoConstraints = false
+        return lb
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.heightAnchor.constraint(equalToConstant: 140).isActive = true
         self.setupConstraints()
     }
-    
-//    override func layoutSubviews() {
-//        self.layer.cornerRadius = self.frame.width / 2
-//        self.layer.shadowRadius = 5
-//        self.layer.opacity = 1
-//        self.layer.shadowOffset = CGSize(width: 3, height: 3)
-//        self.clipsToBounds = false
-//    }
     
     func configure(with icon: String) {
         weatherImageView.image = UIImage(named: icon)
@@ -87,30 +86,34 @@ extension HorizontalCell {
         
         addSubview(bgView)
         
-        // oponentImageView constraints
-        //        partImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: -20).isActive = true
         bgView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         bgView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        bgView.widthAnchor.constraint(equalToConstant: gSizeWidth / 5.5).isActive = true
-        bgView.heightAnchor.constraint(equalToConstant: gSizeWidth / 3).isActive = true
+        bgView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        bgView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
         
         bgView.addSubview(weatherImageView)
         weatherImageView.centerXAnchor.constraint(equalTo: bgView.centerXAnchor).isActive = true
         weatherImageView.centerYAnchor.constraint(equalTo: bgView.centerYAnchor).isActive = true
         weatherImageView.widthAnchor.constraint(equalToConstant: gSizeWidth / 8).isActive = true
         weatherImageView.heightAnchor.constraint(equalTo: weatherImageView.widthAnchor).isActive = true
-//        partImageView.layer.cornerRadius = self.frame.width / 2
         
         bgView.addSubview(timeLabel)
-      timeLabel.centerXAnchor.constraint(equalTo: bgView.centerXAnchor).isActive = true
+        
+        timeLabel.centerXAnchor.constraint(equalTo: bgView.centerXAnchor, constant: -10).isActive = true
         timeLabel.bottomAnchor.constraint(equalTo: weatherImageView.topAnchor, constant: -20).isActive = true
-        timeLabel.heightAnchor.constraint(equalToConstant: 15).isActive = true
-        timeLabel.widthAnchor.constraint(equalTo: weatherImageView.widthAnchor).isActive = true
+        timeLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        timeLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        bgView.addSubview(timeMinLabel)
+        timeMinLabel.centerXAnchor.constraint(equalTo: bgView.centerXAnchor, constant: 25).isActive = true
+        timeMinLabel.bottomAnchor.constraint(equalTo: weatherImageView.topAnchor, constant: -22).isActive = true
+        timeMinLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        timeMinLabel.widthAnchor.constraint(equalToConstant: 30).isActive = true
         
         bgView.addSubview(tempLabel)
-        tempLabel.topAnchor.constraint(equalTo: weatherImageView.bottomAnchor, constant: 15).isActive = true
+        tempLabel.topAnchor.constraint(equalTo: weatherImageView.bottomAnchor, constant: 10).isActive = true
         tempLabel.centerXAnchor.constraint(equalTo: bgView.centerXAnchor).isActive = true
-        tempLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        tempLabel.widthAnchor.constraint(equalTo: weatherImageView.widthAnchor).isActive = true
+        tempLabel.heightAnchor.constraint(equalTo: timeLabel.heightAnchor).isActive = true
+        tempLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
     }
 }

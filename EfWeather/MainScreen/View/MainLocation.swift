@@ -17,9 +17,9 @@ extension MainViewController: CLLocationManagerDelegate {
              locationManager.requestWhenInUseAuthorization()
          }
 
-         if authStatus == .denied || authStatus == .restricted {
-             // add any alert or inform the user to to enable location services
-         }
+//         if authStatus == .denied || authStatus == .restricted {
+//             // add any alert or inform the user to to enable location services
+//         }
 
         // here you can call the start location function
         startLocationManager()
@@ -59,7 +59,6 @@ extension MainViewController: CLLocationManagerDelegate {
                 print(placemark.locality!)
                 print(placemark.administrativeArea!)
                 print(placemark.country!)
-                
             }
         }
         
@@ -85,7 +84,7 @@ extension MainViewController: CLLocationManagerDelegate {
         print("Error \(error)")
         locationManager.stopUpdatingLocation()
         locationManager.delegate = nil
-        self.viewModel.updateLocation(lat: "37.3317", lon: "79.0302")
+        self.viewModel.updateLocation(lat: "37.3317", lon: "79.0302")// для запуска на симуляторе
         
         if let clErr = error as? CLError {
             switch clErr {

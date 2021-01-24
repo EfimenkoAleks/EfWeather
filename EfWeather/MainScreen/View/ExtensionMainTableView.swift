@@ -13,11 +13,14 @@ extension MainTableView {
     func createTable() -> UITableView {
         let tableView = UITableView()
         
-        tableView.separatorStyle = .singleLine
+        tableView.separatorStyle = .none
         tableView.backgroundColor = UIColor.clear
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(HorizTableViewCell.self, forCellReuseIdentifier: HorizTableViewCell.reuseId)
-        tableView.register(VerticalTableViewCell.self, forCellReuseIdentifier: VerticalTableViewCell.reuseId)
+        tableView.register(HorizTableViewCell.self, forCellReuseIdentifier:
+            HorizTableViewCell.reuseId)
+        tableView.register(VerticalTableViewCell.self, forCellReuseIdentifier:
+        VerticalTableViewCell.reuseId)
+        tableView.isScrollEnabled = false
         
         addSubview(tableView)
         
