@@ -10,6 +10,7 @@ import Foundation
 
 protocol NetWorkServiceProtocol {
     func getWeather(lat: String, lon: String, completion: @escaping (WeatherData?) -> Void)
+    func getCityName(lat: String, lon: String, completion: @escaping (WeatherCity?) -> Void)
 }
 
 class NetWorkService: NetWorkServiceProtocol {
@@ -39,7 +40,30 @@ class NetWorkService: NetWorkServiceProtocol {
          
          dataTask.resume()
     }
-    
-    
-    
+ // запрос чтоб получить город
+      func getCityName(lat: String, lon: String, completion: @escaping (WeatherCity?) -> Void) {
+
+            let curentlat = "lat=" + lat + "&"
+           let curentlon = "lon=" + lon + "&"
+    let requestStr = "https://api.openweathermap.org/data/2.5/weather?" + curentlat + curentlon + "&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab"
+           
+            let request = NSMutableURLRequest(url: NSURL(string: requestStr)! as URL,
+                                              cachePolicy: .useProtocolCachePolicy,
+                                              timeoutInterval: 10.0)
+            request.httpMethod = "GET"
+            
+            let session = URLSession.shared
+            let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, _, error) -> Void in
+                if (error != nil) {
+                    print(error ?? "error")
+                } else {
+                   guard let dataRez = data else { return }
+                   let parsedResult: WeatherCity = try! JSONDecoder().decode(WeatherCity.self, from: dataRez)
+                   print("\(parsedResult)")
+                    completion(parsedResult)
+                }
+            })
+            
+            dataTask.resume()
+       }
 }

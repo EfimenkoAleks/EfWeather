@@ -17,6 +17,7 @@ protocol RouterMain {
 protocol RouterProtocol: RouterMain {
     func initialViewController()
     func showMap(coordinate: CLLocationCoordinate2D, router: RouterProtocol)
+    func showSearch(router: RouterProtocol)
     func popToRoot()
 }
 
@@ -41,6 +42,13 @@ class Router: RouterProtocol {
         if let navigationController = navigationController {
             guard let mapViewController = assemblyBuilder?.createMapController(coordinate: coordinate, router: router) else { return }
             navigationController.pushViewController(mapViewController, animated: true)
+        }
+    }
+    
+    func showSearch(router: RouterProtocol) {
+        if let navigationController = navigationController {
+            guard let searchViewController = assemblyBuilder?.createSearchController(router: router) else { return }
+            navigationController.pushViewController(searchViewController, animated: true)
         }
     }
     

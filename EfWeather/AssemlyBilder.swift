@@ -12,6 +12,7 @@ import MapKit
 protocol AssemlyBuilderProtocol {
     func createMainController(router: RouterProtocol) -> UIViewController
     func createMapController(coordinate: CLLocationCoordinate2D, router: RouterProtocol) -> UIViewController
+    func createSearchController(router: RouterProtocol) -> UIViewController
 }
 
 class AssemlyBilder: AssemlyBuilderProtocol {
@@ -30,5 +31,11 @@ class AssemlyBilder: AssemlyBuilderProtocol {
         return view
     }
     
+    func createSearchController(router: RouterProtocol) -> UIViewController {
+        let view = SearchViewController()
+        let viewModel = SearchViewModel(router: router)
+        view.viewModel = viewModel
+        return view
+    }
 }
 
