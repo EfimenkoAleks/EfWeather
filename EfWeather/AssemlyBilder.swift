@@ -7,9 +7,11 @@
 //
 
 import UIKit
+import MapKit
 
 protocol AssemlyBuilderProtocol {
     func createMainController(router: RouterProtocol) -> UIViewController
+    func createMapController(coordinate: CLLocationCoordinate2D, router: RouterProtocol) -> UIViewController
 }
 
 class AssemlyBilder: AssemlyBuilderProtocol {
@@ -21,6 +23,12 @@ class AssemlyBilder: AssemlyBuilderProtocol {
         return view
     }
     
-
+    func createMapController(coordinate: CLLocationCoordinate2D, router: RouterProtocol) -> UIViewController {
+        let view = MapViewController()
+        let viewModel = MapViewModel(coordinate: coordinate, router: router)
+        view.viewModel = viewModel
+        return view
+    }
+    
 }
 

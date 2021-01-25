@@ -10,6 +10,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 import RxDataSources
+import CoreLocation
 
 class Helper {
     
@@ -17,7 +18,8 @@ class Helper {
     
     var dataHorizontalCollectionHelper = BehaviorRelay<[SectionModelH]>(value: [])
     var dataVerticalCollectionHelper = BehaviorRelay<[SectionModelV]>(value: [])
-    let weatherIcon = ["01d", "01n", "02d", "02n", "09d", "09n", "10d", "10n", "11d", "11n"]
+    var coordinateForMian = PublishSubject<[CLLocationCoordinate2D]>()
+    let weatherIcon = ["01d", "01n", "02d", "02n", "03d", "03n", "04d", "04n", "09d", "09n", "10d", "10n", "11d", "11n", "13d", "13n", "50d", "50n"]
 
     
       func convertTemp(temp: Double) -> String {

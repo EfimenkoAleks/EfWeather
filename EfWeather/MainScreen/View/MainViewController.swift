@@ -17,7 +17,7 @@ class MainViewController: UIViewController {
     var viewModel: MainViewModelProtocol!
     var tableView: MainTableView! //view
     var weatherView: CurrentWeatherView!
-    var locationManager: CLLocationManager!
+//    var locationManager: CLLocationManager!
     let disposBag = DisposeBag()
     var arrayIdentiferTableCell: [String]!
     var tableTopHewghtAnchor: NSLayoutConstraint?
@@ -29,8 +29,8 @@ class MainViewController: UIViewController {
         self.createGSize()
         self.createBarItem()
         self.view.backgroundColor = .white
-        self.locationManager = CLLocationManager()
-        self.createLocation()
+//        self.locationManager = CLLocationManager()
+ //       self.startLocarion()
         self.addWeatherView()
         self.createTable()
         self.bindTable()
@@ -108,6 +108,16 @@ class MainViewController: UIViewController {
         
     }
     
+//    func startLocarion() {
+//        LocationManager.shared.start {[weak self] (info) in
+//            guard let self = self else { return }
+//            guard let lat = info.latitude else { return }
+//            guard let lon = info.longitude else { return }
+//            self.viewModel.updateLocation(lat: lat.description, lon: lon.description)
+//            self.viewModel.updateLocation(lat: "37.3317", lon: "79.0302")
+//        }
+//    }
+    
     // MARK: Bind Table
     func bindTable() {
         
@@ -120,7 +130,8 @@ class MainViewController: UIViewController {
         
         self.viewModel.data
             .observeOn(MainScheduler.instance)
-            .bind { (data) in
+            .bind {[weak self] (data) in
+                guard let self = self else { return }
                 guard let dt = data.current?.dt else { return }
                 self.weatherView.dayLabel.text = Helper.shared.dateForCurentWeather(timeDate: dt)
                 guard let tempDay = data.current?.temp else { return }
@@ -131,8 +142,8 @@ class MainViewController: UIViewController {
                 self.weatherView.humidityLabel.text = humidity.description + "%"
                 guard let wind = data.current?.wind_speed else { return }
                 self.weatherView.windLabel.text = Int(wind).description + "м/сек"
-                guard let city = data.timezone else { return }
-                self.citylabel?.text = self.viewModel.findCity(city)
+//                guard let city = data.timezone else { return }
+//                self.citylabel?.text = self.viewModel.findCity(city)
                 guard let image = data.current?.weather?.first?.icon else { return }
                 print("\(image)")
                 //               self.weatherView.weatherImageView.image = UIImage(named: "01d")
@@ -142,6 +153,13 @@ class MainViewController: UIViewController {
                     self.weatherView.weatherImageView.image = UIImage(named:"02d")
                 }
         }.disposed(by: disposBag)
+        
+        self.viewModel.city
+            .asDriver()
+            .drive(onNext: {[weak self] (value) in
+                guard let self = self else { return }
+                self.citylabel?.text = value
+            }).disposed(by: disposBag)
     }
 // создание barButtonItem
     func createBarItem() {
@@ -160,7 +178,7 @@ class MainViewController: UIViewController {
         let place = UIBarButtonItem(image: imageTemplate2, style: .plain, target: self, action: #selector(MainViewController.showSearch))
         place.tintColor = Helper.shared.hexStringToUIColor(hex: "#FFFFFF")
         
-        self.citylabel = UILabel(frame: CGRect(x: 3, y: 5, width: 50, height: 30))
+        self.citylabel = UILabel(frame: CGRect(x: 3, y: 5, width: 80, height: 30))
         citylabel?.font = UIFont(name: "AvenirNext-Medium ", size: 24)
         citylabel?.text = "Запорожье"
         citylabel?.textAlignment = .left
@@ -174,7 +192,7 @@ class MainViewController: UIViewController {
 // переходы на другой контроллер
 // MARK: Transition to another controller
     @objc func showMap() {
-        
+        self.viewModel.showMap()
     }
     
     @objc func showSearch() {

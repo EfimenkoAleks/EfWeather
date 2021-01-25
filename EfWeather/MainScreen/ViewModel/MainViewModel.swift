@@ -10,11 +10,14 @@ import Foundation
 import RxCocoa
 import RxSwift
 import RxDataSources
+import MapKit
 
 protocol MainViewModelProtocol {
     var data: BehaviorRelay<WeatherData> { get set }
+    var city: BehaviorRelay<String> { get set }
     func updateLocation(lat: String, lon: String)
     func findCity(_ str: String) -> String
+    func showMap()
 }
 
 class MainViewModel: MainViewModelProtocol {
@@ -24,6 +27,7 @@ class MainViewModel: MainViewModelProtocol {
     var router: RouterProtocol
     var lat: BehaviorRelay<String>
     var lon: BehaviorRelay<String>
+    var city: BehaviorRelay<String>
     var disposBag: DisposeBag
     
     required init (router: RouterProtocol, netWorkService: NetWorkServiceProtocol) {
@@ -32,6 +36,7 @@ class MainViewModel: MainViewModelProtocol {
         self.data = BehaviorRelay(value: WeatherData(lat: nil, lon: nil, timezone: nil, timezone_offset: nil, current: nil, hourly: nil, daily: nil))
         self.lat = BehaviorRelay<String>(value: "")
         self.lon = BehaviorRelay<String>(value: "")
+        self.city = BehaviorRelay<String>(value: "Запорожье")
         self.disposBag = DisposeBag()
     
         Observable.combineLatest(self.lat.asObservable(), self.lon.asObservable()).subscribe(onNext: { (lat, lon) in
@@ -51,6 +56,28 @@ class MainViewModel: MainViewModelProtocol {
                 Helper.shared.dataVerticalCollectionHelper.accept([SectionModelV(header: data.timezone, items: data.daily!)])
             }
             }).disposed(by: disposBag)
+        
+        Helper.shared.coordinateForMian.subscribe(onNext: {[weak self] (event) in
+            guard let self = self else { return }
+            guard let lat = event.first?.latitude else { return }
+            guard let lon = event.first?.longitude else { return }
+            self.updateLocation(lat: lat.description, lon: lon.description)
+        }).disposed(by: disposBag)
+        
+        self.startLocarion()
+    }
+    
+    func startLocarion() {
+        LocationManager.shared.start {[weak self] (info) in
+            guard let self = self else { return }
+            guard let lat = info.latitude else { return }
+            guard let lon = info.longitude else { return }
+            guard let city = info.city else { return }
+            self.updateLocation(lat: lat.description, lon: lon.description)
+            self.city.accept(city)
+        }
+// для запуска на симуляторе
+        self.updateLocation(lat: "47.84108145851735", lon: "35.14000413966346")
     }
    
     func findCity(_ str: String) -> String {
@@ -72,5 +99,19 @@ class MainViewModel: MainViewModelProtocol {
         self.lat.accept(lat)
         self.lon.accept(lon)
     }
+    
+    func showMap() {
+        
+        let coord = CLLocationCoordinate2D(latitude: CLLocationDegrees(randomBetweenNumbers(firstNum: 22, secondNum: 24.698099)), longitude: CLLocationDegrees(randomBetweenNumbers(firstNum: 31.674179, secondNum: 36.89468)))
+        
+  //          if let coordinate = LocationManager.shared.coordinate {
+            self.router.showMap(coordinate: coord, router: self.router)
+//        }
+        
+    }
+    
+    func randomBetweenNumbers(firstNum: CGFloat, secondNum: CGFloat) -> CGFloat{
+    return CGFloat(arc4random()) / CGFloat(UINT32_MAX) * abs(firstNum - secondNum) + min(firstNum, secondNum)}
+
 }
 

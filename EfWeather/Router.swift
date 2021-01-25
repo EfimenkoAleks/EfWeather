@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 protocol RouterMain {
     var navigationController: UINavigationController? { get set }
@@ -15,8 +16,8 @@ protocol RouterMain {
 
 protocol RouterProtocol: RouterMain {
     func initialViewController()
-//    func showDetail(comment: Comment?)
-//    func popToRoot()
+    func showMap(coordinate: CLLocationCoordinate2D, router: RouterProtocol)
+    func popToRoot()
 }
 
 class Router: RouterProtocol {
@@ -35,6 +36,20 @@ class Router: RouterProtocol {
             navigationController.viewControllers = [mainController]
         }
     }
+    
+    func showMap(coordinate: CLLocationCoordinate2D, router: RouterProtocol) {
+        if let navigationController = navigationController {
+            guard let mapViewController = assemblyBuilder?.createMapController(coordinate: coordinate, router: router) else { return }
+            navigationController.pushViewController(mapViewController, animated: true)
+        }
+    }
+    
+    func popToRoot() {
+        if let navigationController = navigationController {
+            navigationController.popToRootViewController(animated: true)
+        }
+    }
+    
 
 }
 
