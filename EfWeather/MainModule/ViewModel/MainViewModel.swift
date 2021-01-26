@@ -75,7 +75,7 @@ class MainViewModel: MainViewModelProtocol {
             self.updateLocation(lat: lat.description, lon: lon.description)
         }).disposed(by: disposBag)
         
-        self.startLocarion()
+        self.startLocation()
         
 // город из выбора города и перезагрузка данных
 //        Helper.shared.cityForMain.subscribe(onNext: {[weak self] (city) in
@@ -87,7 +87,7 @@ class MainViewModel: MainViewModelProtocol {
 //        }).disposed(by: disposBag)
     }
     
-    func startLocarion() {
+    func startLocation() {
         LocationManager.shared.start {[weak self] (info) in
             guard let self = self else { return }
             guard let lat = info.latitude else { return }

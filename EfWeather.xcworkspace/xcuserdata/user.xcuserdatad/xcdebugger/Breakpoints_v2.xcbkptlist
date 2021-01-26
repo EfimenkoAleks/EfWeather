@@ -468,5 +468,69 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9725EAD7-3445-4972-A140-4303C0E7103C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EfWeather/MainModule/ViewModel/MainViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "48"
+            endingLineNumber = "48"
+            landmarkName = "init(router:netWorkService:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "9725EAD7-3445-4972-A140-4303C0E7103C - 97b301b99ac4586f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.String, Swift.String) -&gt; () in EfWeather.MainViewModel.init(router: EfWeather.RouterProtocol, netWorkService: EfWeather.NetWorkServiceProtocol) -&gt; EfWeather.MainViewModel"
+                  moduleName = "EfWeather"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/user/Desktop/EfWeather/EfWeather/MainModule/ViewModel/MainViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "48"
+                  endingLineNumber = "48"
+                  offsetFromSymbolStart = "350">
+               </Location>
+               <Location
+                  uuid = "9725EAD7-3445-4972-A140-4303C0E7103C - f4a2d9c6cc071039"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Optional&lt;EfWeather.WeatherData&gt;) -&gt; () in closure #1 (Swift.String, Swift.String) -&gt; () in EfWeather.MainViewModel.init(router: EfWeather.RouterProtocol, netWorkService: EfWeather.NetWorkServiceProtocol) -&gt; EfWeather.MainViewModel"
+                  moduleName = "EfWeather"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/user/Desktop/EfWeather/EfWeather/MainModule/ViewModel/MainViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "48"
+                  endingLineNumber = "48"
+                  offsetFromSymbolStart = "152">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4E441620-C8BE-4509-A294-FB19706676DE"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EfWeather/MainModule/ViewModel/MainViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
+            landmarkName = "init(router:netWorkService:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

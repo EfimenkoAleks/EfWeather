@@ -26,7 +26,6 @@
 		CE7C392525B31E7900F398A9 /* NetWorkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7C392425B31E7900F398A9 /* NetWorkService.swift */; };
 		CE7C392B25B34C0500F398A9 /* HorizontalCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7C392A25B34C0500F398A9 /* HorizontalCell.swift */; };
 		CE7C392D25B34C6100F398A9 /* VerticalCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7C392C25B34C6100F398A9 /* VerticalCell.swift */; };
-		CE7C393125B4CF5200F398A9 /* MainLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7C393025B4CF5200F398A9 /* MainLocation.swift */; };
 		CEAABCAF25B880B300AD9B19 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAABCAE25B880B300AD9B19 /* Helper.swift */; };
 		CEACFC2A25BEB506003F5271 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEACFC2925BEB506003F5271 /* SearchViewController.swift */; };
 		CEACFC2C25BEB54D003F5271 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEACFC2B25BEB54D003F5271 /* SearchViewModel.swift */; };
@@ -69,7 +68,6 @@
 		CE7C392425B31E7900F398A9 /* NetWorkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetWorkService.swift; sourceTree = "<group>"; };
 		CE7C392A25B34C0500F398A9 /* HorizontalCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalCell.swift; sourceTree = "<group>"; };
 		CE7C392C25B34C6100F398A9 /* VerticalCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalCell.swift; sourceTree = "<group>"; };
-		CE7C393025B4CF5200F398A9 /* MainLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainLocation.swift; sourceTree = "<group>"; };
 		CEAABCAE25B880B300AD9B19 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		CEACFC2925BEB506003F5271 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		CEACFC2B25BEB54D003F5271 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
@@ -211,7 +209,6 @@
 				CE7C392A25B34C0500F398A9 /* HorizontalCell.swift */,
 				CEE5ED4B25B826FD00D91140 /* VerticalTableViewCell.swift */,
 				CE7C392C25B34C6100F398A9 /* VerticalCell.swift */,
-				CE7C393025B4CF5200F398A9 /* MainLocation.swift */,
 				CEBD388D25B6356F007F027F /* CurrentWeatherView.swift */,
 				CEB67E9325B78168004F6CE0 /* MainTableView.swift */,
 				CEB67E9525B781F0004F6CE0 /* ExtensionMainTableView.swift */,
@@ -407,7 +404,6 @@
 				CE7C392B25B34C0500F398A9 /* HorizontalCell.swift in Sources */,
 				CE7C390325B20FB500F398A9 /* ViewController.swift in Sources */,
 				CEBD48FC25BF835B00E498B0 /* ExtensionSearchConrtoller.swift in Sources */,
-				CE7C393125B4CF5200F398A9 /* MainLocation.swift in Sources */,
 				CEB67E9625B781F0004F6CE0 /* ExtensionMainTableView.swift in Sources */,
 				CEBD48FA25BF506200E498B0 /* CityFromWeather.swift in Sources */,
 				CE7C38FF25B20FB500F398A9 /* AppDelegate.swift in Sources */,
