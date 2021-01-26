@@ -97,7 +97,7 @@ class MainViewModel: MainViewModelProtocol {
             self.city.accept(city)
         }
 // для запуска на симуляторе
-//        self.updateLocation(lat: "47.84108145851735", lon: "35.14000413966346")
+        self.updateLocation(lat: "47.84108145851735", lon: "35.14000413966346")
     }
    
     func findCity(_ str: String) -> String {
