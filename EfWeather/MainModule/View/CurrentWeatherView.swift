@@ -60,7 +60,7 @@ class CurrentWeatherView: UIView {
     var windImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .clear
-        imageView.image = UIImage(named: "01d")
+        imageView.image = UIImage(named: "ic_wind")
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         return imageView
@@ -69,7 +69,7 @@ class CurrentWeatherView: UIView {
     var directionWindImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .clear
-        imageView.image = UIImage(named: "01d")
+        imageView.image = UIImage(named: "icon_wind_ne")
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         return imageView
@@ -78,7 +78,7 @@ class CurrentWeatherView: UIView {
     var tempImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .clear
-        imageView.image = UIImage(named: "01d")
+        imageView.image = UIImage(named: "ic_temp")
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         return imageView
@@ -87,7 +87,7 @@ class CurrentWeatherView: UIView {
     var humidityImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .clear
-        imageView.image = UIImage(named: "01d")
+        imageView.image = UIImage(named: "ic_humidity")
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         return imageView
