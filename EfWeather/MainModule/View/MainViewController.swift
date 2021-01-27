@@ -108,16 +108,6 @@ class MainViewController: UIViewController {
         
     }
     
-//    func startLocarion() {
-//        LocationManager.shared.start {[weak self] (info) in
-//            guard let self = self else { return }
-//            guard let lat = info.latitude else { return }
-//            guard let lon = info.longitude else { return }
-//            self.viewModel.updateLocation(lat: lat.description, lon: lon.description)
-//            self.viewModel.updateLocation(lat: "37.3317", lon: "79.0302")
-//        }
-//    }
-    
     // MARK: Bind Table
     func bindTable() {
         
@@ -143,8 +133,6 @@ class MainViewController: UIViewController {
                 guard let wind = data.current?.wind_speed else { return }
                 self.weatherView.windLabel.text = Int(wind).description + "м/сек"
                 guard let image = data.current?.weather?.first?.icon else { return }
-                print("\(image)")
-                //               self.weatherView.weatherImageView.image = UIImage(named: "01d")
                 if Helper.shared.weatherIcon.contains(image) {
                     self.weatherView.weatherImageView.image = UIImage(named:image)
                 } else {
@@ -178,7 +166,7 @@ class MainViewController: UIViewController {
         
         self.citylabel = UILabel(frame: CGRect(x: 3, y: 5, width: 80, height: 30))
         citylabel?.font = UIFont(name: "AvenirNext-Medium ", size: 24)
-        citylabel?.text = "Запорожье"
+        citylabel?.text = ""
         citylabel?.textAlignment = .left
         citylabel?.textColor = .white
         citylabel?.backgroundColor = .clear

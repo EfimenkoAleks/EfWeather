@@ -70,21 +70,10 @@ class MainViewModel: MainViewModelProtocol {
  // координаты из карты для main и перезагрузка данных
         Helper.shared.coordinateForMian.subscribe(onNext: {[weak self] (event) in
             guard let self = self else { return }
-            guard let lat = event.first?.latitude else { return }
-            guard let lon = event.first?.longitude else { return }
-            self.updateLocation(lat: lat.description, lon: lon.description)
+            self.updateLocation(lat: event.latitude.description, lon: event.longitude.description)
         }).disposed(by: disposBag)
         
         self.startLocation()
-        
-// город из выбора города и перезагрузка данных
-//        Helper.shared.cityForMain.subscribe(onNext: {[weak self] (city) in
-//            guard let self = self else { return }
-//            guard let city = city else { return }
-//            self.updateLocation(lat: city.coord!.lat!.description, lon: city.coord!.lon!.description)
-//            self.city.accept(city.name!)
-//            
-//        }).disposed(by: disposBag)
     }
     
     func startLocation() {
@@ -92,11 +81,9 @@ class MainViewModel: MainViewModelProtocol {
             guard let self = self else { return }
             guard let lat = info.latitude else { return }
             guard let lon = info.longitude else { return }
-            guard let city = info.city else { return }
             self.updateLocation(lat: lat.description, lon: lon.description)
-            self.city.accept(city)
         }
-// для запуска на симуляторе
+// для запуска на симуляторе , при билде для телефона закоментировать
         self.updateLocation(lat: "47.84108145851735", lon: "35.14000413966346")
     }
    
@@ -119,14 +106,13 @@ class MainViewModel: MainViewModelProtocol {
         self.lat.accept(lat)
         self.lon.accept(lon)
     }
-    
+// переход на мап контроллер
     func showMap() {
-        
-        let coord = CLLocationCoordinate2D(latitude: CLLocationDegrees(randomBetweenNumbers(firstNum: 22, secondNum: 24.698099)), longitude: CLLocationDegrees(randomBetweenNumbers(firstNum: 31.674179, secondNum: 36.89468)))
-        
-  //          if let coordinate = LocationManager.shared.coordinate {
+  
+        if self.lat.value.count > 1 && self.lon.value.count > 1 {
+        let coord = CLLocationCoordinate2D(latitude: CLLocationDegrees(exactly: Double(self.lat.value)!)!, longitude: CLLocationDegrees(exactly: Double(self.lon.value)!)!)
             self.router.showMap(coordinate: coord, router: self.router)
-//        }
+        }
     }
     
     func showSearch() {

@@ -55,7 +55,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
         let city = self.filtredArray?[indexPath.row]
         cell.nameLabel.text = city?.name
         let coord = CLLocationCoordinate2D(latitude: CLLocationDegrees(exactly: (city?.coord?.lat)!)!, longitude: CLLocationDegrees(exactly: (city?.coord?.lon)!)!)
-        Helper.shared.coordinateForMian.onNext([coord])
+        Helper.shared.coordinateForMian.onNext(coord)
      }
      
         self.viewModel.toRootViewController()

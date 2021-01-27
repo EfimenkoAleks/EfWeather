@@ -14,6 +14,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     static let shared = LocationManager()
     var locationManager = CLLocationManager()
     var locationInfoCallBack: ((_ info:LocationInformation)->())!
+//    var locationInfoCallBack: LocationInformation!
     var coordinate: CLLocationCoordinate2D?
     
     override init() {
@@ -67,7 +68,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Error \(error)")
         locationManager.stopUpdatingLocation()
-        //            self.viewModel.updateLocation(lat: "37.3317", lon: "79.0302")// для запуска на симуляторе
         
         if let clErr = error as? CLError {
             switch clErr {

@@ -19,7 +19,7 @@ class Helper {
 // переменные для передачи данных между контролерами
     var dataHorizontalCollectionHelper = BehaviorRelay<[SectionModelH]>(value: [])
     var dataVerticalCollectionHelper = BehaviorRelay<[SectionModelV]>(value: [])
-    var coordinateForMian = PublishSubject<[CLLocationCoordinate2D]>()
+    var coordinateForMian = PublishSubject<CLLocationCoordinate2D>()
     var cityForMain = BehaviorRelay<City?>(value: nil)
     
 // масив названий icon для image cell

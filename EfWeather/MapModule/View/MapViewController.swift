@@ -26,9 +26,9 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
         self.mapView?.delegate = self
         self.addGesture()
         
-        self.viewModel.users.subscribe(onNext: {[weak self] (user) in
+        self.viewModel.user.subscribe(onNext: {[weak self] (user) in
             guard let self = self else { return }
-            self.mapView?.addAnnotation(user.first!)
+            self.mapView?.addAnnotation(user)
         }).disposed(by: self.disposBag)
         self.castomBarButton()
     }
@@ -78,8 +78,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
         if gestureReconizer.state != UIGestureRecognizer.State.ended {
             let touchLocation = gestureReconizer.location(in: mapView)
             let locationCoordinate = mapView!.convert(touchLocation,toCoordinateFrom: mapView)
-            print("Tapped at lat: \(locationCoordinate.latitude) long: \(locationCoordinate.longitude)")
-            Helper.shared.coordinateForMian.onNext([locationCoordinate])
+            Helper.shared.coordinateForMian.onNext(locationCoordinate)
             self.viewModel.toRootViewController()
             return
         }
