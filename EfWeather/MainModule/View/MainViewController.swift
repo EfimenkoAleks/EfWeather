@@ -17,7 +17,6 @@ class MainViewController: UIViewController {
     var viewModel: MainViewModelProtocol!
     var tableView: MainTableView! //view
     var weatherView: CurrentWeatherView!
-//    var locationManager: CLLocationManager!
     let disposBag = DisposeBag()
     var arrayIdentiferTableCell: [String]!
     var tableTopHewghtAnchor: NSLayoutConstraint?
@@ -29,12 +28,11 @@ class MainViewController: UIViewController {
         self.createGSize()
         self.createBarItem()
         self.view.backgroundColor = .white
-//        self.locationManager = CLLocationManager()
- //       self.startLocarion()
         self.addWeatherView()
         self.createTable()
         self.bindTable()
     }
+    
  // обработка поворота экрана
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         print("Did rotate \(self.view.bounds.size.width)")
@@ -49,7 +47,6 @@ class MainViewController: UIViewController {
             self.changeHeightView(height: gSizeHeight / 10 * 4.3)
             gSizeWidthCell = gSizeWidth
             tableView.layoutIfNeeded()
-            
         }
     }
 // определение начальных размеров экрана
@@ -110,14 +107,7 @@ class MainViewController: UIViewController {
     
     // MARK: Bind Table
     func bindTable() {
-        
-        self.viewModel.data
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: {[weak self] (newItem) in
-                guard let self = self else { return }
-                self.tableView.table.reloadData()
-            }).disposed(by: disposBag)
-        
+ 
         self.viewModel.data
             .observeOn(MainScheduler.instance)
             .bind {[weak self] (data) in
@@ -138,6 +128,7 @@ class MainViewController: UIViewController {
                 } else {
                     self.weatherView.weatherImageView.image = UIImage(named:"02d")
                 }
+                self.tableView.table.reloadData()
         }.disposed(by: disposBag)
         
         self.viewModel.city
@@ -159,6 +150,11 @@ class MainViewController: UIViewController {
         let map = UIBarButtonItem(image: imageTemp, style: .plain, target: self, action: #selector(MainViewController.showMap))
         map.tintColor = Helper.shared.hexStringToUIColor(hex: "#FFFFFF")
         
+        let imagereload = UIImage(systemName: "arrow.clockwise")
+        let imageTempRe = imagereload!.withRenderingMode(.alwaysTemplate)
+        let reload = UIBarButtonItem(image: imageTempRe, style: .plain, target: self, action: #selector(MainViewController.reloadLocation))
+        reload.tintColor = Helper.shared.hexStringToUIColor(hex: "#FFFFFF")
+        
         let imageFavorites = UIImage(named: "ic_place")
         let imageTemplate2 = imageFavorites?.withRenderingMode(.alwaysTemplate)
         let place = UIBarButtonItem(image: imageTemplate2, style: .plain, target: self, action: #selector(MainViewController.showSearch))
@@ -172,9 +168,14 @@ class MainViewController: UIViewController {
         citylabel?.backgroundColor = .clear
         let barButton = UIBarButtonItem(customView: citylabel!)
         
-        navigationItem.rightBarButtonItem = map
+        navigationItem.rightBarButtonItems = [map, reload]
         navigationItem.leftBarButtonItems = [place, barButton]
     }
+    
+    @objc private func reloadLocation() {
+        self.viewModel.getLocation.restartLocation()
+    }
+    
 // переходы на другой контроллер
 // MARK: Transition to another controller
     @objc func showMap() {

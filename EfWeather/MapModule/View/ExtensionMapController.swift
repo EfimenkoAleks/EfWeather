@@ -29,7 +29,8 @@ extension MapViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        guard let coordinate = locationManager.location?.coordinate else {return}
+        guard let coordinate = self.location?.coordinate else {return}
+        
         
         self.mapView?.removeOverlays(mapView.overlays)
         let user = view.annotation as! User

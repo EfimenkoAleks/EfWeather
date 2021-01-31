@@ -116,7 +116,7 @@
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "B7719814-88C7-42B9-B7A9-1AF6C8EE3C20 - 62b599a744173f4a"
+                  uuid = "B7719814-88C7-42B9-B7A9-1AF6C8EE3C20 - b390e82b3f246028"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -131,7 +131,7 @@
                   offsetFromSymbolStart = "1495">
                </Location>
                <Location
-                  uuid = "B7719814-88C7-42B9-B7A9-1AF6C8EE3C20 - 8e7835e471bf786"
+                  uuid = "B7719814-88C7-42B9-B7A9-1AF6C8EE3C20 - d9c2f2d23c28af05"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -446,8 +446,8 @@
             filePath = "EfWeather/SerchModul/ViewModel/SearchViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "40"
-            endingLineNumber = "40"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
             landmarkName = "loadJson()"
             landmarkType = "7">
          </BreakpointContent>
@@ -455,79 +455,79 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "0E121AB2-D8BD-4027-817C-262FE75AA1BC"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "EfWeather/SerchModul/ViewModel/SearchViewModel.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
-            landmarkName = "init(router:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "9725EAD7-3445-4972-A140-4303C0E7103C"
+            uuid = "97EFF50A-9A51-4AA6-823E-3A45A6EBF36C"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "EfWeather/MainModule/ViewModel/MainViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "48"
-            endingLineNumber = "48"
+            startingLineNumber = "79"
+            endingLineNumber = "79"
             landmarkName = "init(router:netWorkService:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9725EAD7-3445-4972-A140-4303C0E7103C - 97b301b99ac4586f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.String, Swift.String) -&gt; () in EfWeather.MainViewModel.init(router: EfWeather.RouterProtocol, netWorkService: EfWeather.NetWorkServiceProtocol) -&gt; EfWeather.MainViewModel"
-                  moduleName = "EfWeather"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/user/Desktop/EfWeather/EfWeather/MainModule/ViewModel/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48"
-                  offsetFromSymbolStart = "350">
-               </Location>
-               <Location
-                  uuid = "9725EAD7-3445-4972-A140-4303C0E7103C - f4a2d9c6cc071039"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Optional&lt;EfWeather.WeatherData&gt;) -&gt; () in closure #1 (Swift.String, Swift.String) -&gt; () in EfWeather.MainViewModel.init(router: EfWeather.RouterProtocol, netWorkService: EfWeather.NetWorkServiceProtocol) -&gt; EfWeather.MainViewModel"
-                  moduleName = "EfWeather"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/user/Desktop/EfWeather/EfWeather/MainModule/ViewModel/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48"
-                  offsetFromSymbolStart = "152">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4E441620-C8BE-4509-A294-FB19706676DE"
+            uuid = "611FA45E-8C36-4EF8-BF75-880B495B4DA2"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EfWeather/LocationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
+            landmarkName = "locationManager(_:didUpdateLocations:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "50162330-D6BA-453E-BF70-A881E7CE1D11"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EfWeather/LocationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
+            landmarkName = "locationManager(_:didUpdateLocations:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C70AE249-CC43-407F-8C4B-758F44BD0F29"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "EfWeather/MainModule/ViewModel/MainViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
+            startingLineNumber = "53"
+            endingLineNumber = "53"
+            landmarkName = "init(router:netWorkService:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "ACA40BD6-5275-4949-BFC7-CCBC87629666"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EfWeather/MainModule/ViewModel/MainViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
             landmarkName = "init(router:netWorkService:)"
             landmarkType = "7">
          </BreakpointContent>

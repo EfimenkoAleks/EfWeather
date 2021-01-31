@@ -15,7 +15,8 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
     
     var viewModel: MapViewModelProtocol!
     var mapView: MKMapView?
-    let locationManager = CLLocationManager()
+    let locationManager = GetLocation()
+    var location: CLLocation?
     var disposBag = DisposeBag()
     var mapItem: MKMapItem?
     
@@ -30,15 +31,16 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
             guard let self = self else { return }
             self.mapView?.addAnnotation(user)
         }).disposed(by: self.disposBag)
-        self.castomBarButton()
+        self.castomBarBeckButton()
+        self.checkLocationEnable()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.checkLocationEnable()
+        self.locationManager.restartLocation()
     }
     
-    func castomBarButton() {
+    func castomBarBeckButton() {
         let backButton = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: nil, action: nil)
         backButton.tintColor = Helper.shared.hexStringToUIColor(hex: "#4A90E2")
         self.navigationController?.navigationBar.topItem!.backBarButtonItem = backButton;
@@ -79,6 +81,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
             let touchLocation = gestureReconizer.location(in: mapView)
             let locationCoordinate = mapView!.convert(touchLocation,toCoordinateFrom: mapView)
             Helper.shared.coordinateForMian.onNext(locationCoordinate)
+            
             self.viewModel.toRootViewController()
             return
         }
@@ -90,35 +93,14 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
     func checkLocationEnable() {
         
         if CLLocationManager.locationServicesEnabled() {
-            self.checkAutorization()
+            self.locationManager.run { (location) in
+                self.location = location
+            }
         } else {
             self.showAlert(title: "У вас выключена служба геолокации", mesage: "Хотите включить?", url: URL(string: "App-Prefs:root=LOCATION_SERVICES"))
         }
     }
-    
-    func checkAutorization() {
-        
-        switch CLLocationManager.authorizationStatus() {
-        case .authorizedAlways:
-            break
-        case .authorizedWhenInUse:
-            mapView?.showsUserLocation = true
-            locationManager.startUpdatingLocation()
-            break
-        case .denied:
-            self.showAlert(title: "Вы запретили использовать местоположение", mesage: "Хотите это изменить", url: URL(string: UIApplication.openSettingsURLString))
-            break
-        case .restricted:
-            break
-        case .notDetermined:
-            locationManager.requestWhenInUseAuthorization()
-            break
-            
-        @unknown default:
-            print("error")
-            break
-        }
-    }
+
 // алерт для включения определения локации
     func showAlert(title: String, mesage: String?, url: URL?) {
         

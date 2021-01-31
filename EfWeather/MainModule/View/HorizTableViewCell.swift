@@ -45,10 +45,12 @@ class HorizTableViewCell: UITableViewCell {
         self.collectionView = UICollectionView(frame: self.frame, collectionViewLayout: layout)
         collectionView.register(HorizontalCell.self, forCellWithReuseIdentifier: HorizontalCell.reuseId)
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isScrollEnabled = true
+        collectionView.isUserInteractionEnabled = true
         collectionView.backgroundColor = Helper.shared.hexStringToUIColor(hex: "#5A9FF0")
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
-        self.addSubview(collectionView)
+        self.contentView.addSubview(collectionView)
         
         collectionView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
@@ -91,5 +93,9 @@ extension HorizTableViewCell: UICollectionViewDelegate, UICollectionViewDataSour
         } else { return cell }
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("\(indexPath)")
+       
+    }
     
 }

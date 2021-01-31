@@ -23,18 +23,20 @@ class SearchViewModel: SearchViewModelProtocol {
     let disposBag = DisposeBag()
 
     required init (router: RouterProtocol) {
-       
+        
         self.router = router
         self.city = BehaviorRelay(value: [])
         
- // парсим данные из JSON
-        Observable.just(self.loadJson()).subscribe(onNext: {[weak self] (city) in
-            guard let self = self else { return }
-            guard let arrayCity = city else { return }
-            self.city.accept(arrayCity)
-            print("self.city.accept(arrayCity)")
-        }).disposed(by: self.disposBag)
-        
+        // парсим данные из JSON
+        DispatchQueue.global().async {
+            Observable.just(self.loadJson())
+                .observeOn(SerialDispatchQueueScheduler(qos: .background))
+                .subscribe(onNext: {[weak self] (city) in
+                    guard let self = self else { return }
+                    guard let arrayCity = city else { return }
+                    self.city.accept(arrayCity)
+                }).disposed(by: self.disposBag)
+        }
     }
     
     func loadJson() -> [City]? {

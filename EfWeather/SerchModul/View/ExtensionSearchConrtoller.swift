@@ -17,7 +17,7 @@ extension SearchViewController: UISearchResultsUpdating {
     
     private func filterContentForSearchText(_ searchText: String) {
         
-        self.filtredArray = self.arrayCity!.filter({$0.name!.contains(searchText)})
+        self.filtredArray = self.arrayCity!.value.filter({$0.name!.contains(searchText)})
         self.tableView.table.reloadData()
     }
 }
@@ -38,7 +38,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
         if isFiltering {
             cell.nameLabel.text = self.filtredArray?[indexPath.row].name
         } else {
-            cell.nameLabel.text = self.arrayCity?[indexPath.row].name
+            cell.nameLabel.text = self.arrayCity?.value[indexPath.row].name
         }
         return cell
     }

@@ -52,7 +52,6 @@ class CurrentWeatherView: UIView {
         imageView.backgroundColor = .clear
         imageView.image = UIImage(named: "01n")
         imageView.translatesAutoresizingMaskIntoConstraints = false
-//        imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()

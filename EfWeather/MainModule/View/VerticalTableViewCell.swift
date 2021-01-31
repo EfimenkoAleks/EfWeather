@@ -45,10 +45,12 @@ class VerticalTableViewCell: UITableViewCell {
         self.collectionView = UICollectionView(frame: self.frame, collectionViewLayout: layout)
         collectionView.register(VerticalCell.self, forCellWithReuseIdentifier: VerticalCell.reuseId)
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.isScrollEnabled = true
+        collectionView.isUserInteractionEnabled = true
         collectionView.backgroundColor = .clear
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
-        self.addSubview(collectionView)
+        self.contentView.addSubview(collectionView)
         
         collectionView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
@@ -89,10 +91,15 @@ extension VerticalTableViewCell: UICollectionViewDelegate, UICollectionViewDataS
                     cell.weatherImageView.image = UIImage(named: "02d")
                 }
                 cell.weatherImageView.tintColor = Helper.shared.hexStringToUIColor(hex: "#000000")
+                cell.weatherImageView.backgroundColor = Helper.shared.hexStringToUIColor(hex: "#000000")
             }
             
             return cell
         } else { return cell }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("\(indexPath)")
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

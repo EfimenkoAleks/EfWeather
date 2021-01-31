@@ -15,9 +15,12 @@ class SearchViewController: UIViewController {
     
     var viewModel: SearchViewModelProtocol!
     var tableView: SearchTable!
-    var arrayCity: [City]!
+    var arrayCity: BehaviorRelay<[City]>!
     var filtredArray: [City]!
+    var activityViev: ActivityView!
+    var swichActivity: Bool!
     let disposBag = DisposeBag()
+    var tableBottomAnchor: NSLayoutConstraint?
     private var searchBarIsEmpty: Bool {
         guard let text = searchController.searchBar.text else { return false }
         return text.isEmpty
@@ -33,8 +36,10 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.arrayCity = []
+        self.createActivityView()
+        self.arrayCity = BehaviorRelay<[City]>(value: [])
         self.filtredArray = []
+        self.swichActivity = false
         self.view.backgroundColor = Helper.shared.hexStringToUIColor(hex: "#FFFFFF")
         self.addBgView()
         self.createTable()
@@ -43,7 +48,23 @@ class SearchViewController: UIViewController {
         self.setupSerchController()
         
         self.castomBarButton()
+        self.setupNotification()
     }
+ 
+// создание индикатора загрузки
+    func createActivityView() {
+        self.activityViev = ActivityView()
+        self.view.addSubview(self.activityViev)
+        
+        self.activityViev.translatesAutoresizingMaskIntoConstraints = false
+        self.activityViev.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
+        self.activityViev.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+        self.activityViev.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        self.activityViev.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        
+        self.activityViev.startIndicator()
+    }
+    
     // view под search bar
     func addBgView() {
         let vi = UIView()
@@ -80,14 +101,14 @@ class SearchViewController: UIViewController {
     // создаём таблицу
     func createTable() {
         self.tableView = SearchTable()
-        
         self.view.addSubview(tableView)
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        tableBottomAnchor = tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+        tableBottomAnchor?.isActive = true
         tableView.table.delegate = self
         tableView.table.dataSource = self
     }
@@ -96,10 +117,55 @@ class SearchViewController: UIViewController {
         self.viewModel.city
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { (city) in
-                print("self.viewModel.city new value")
-                self.arrayCity = city
-                self.tableView.table.reloadData()
+                self.arrayCity.accept(city)
             }).disposed(by: self.disposBag)
+        
+        self.arrayCity.subscribe {[weak self] (city) in
+            guard let self = self else { return }
+            if city.element!.count > 0 {
+                self.removIndicator()
+            }
+        }.disposed(by: self.disposBag)
     }
     
+    private func removIndicator() {
+        self.activityViev.stopIndicator()
+        self.activityViev.removeFromSuperview()
+    }
+// нотификации для смещения контента с появлением клавиатуры
+    private func setupNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: NSNotification.Name(rawValue: "UIKeyboardWillShowNotification"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: NSNotification.Name(rawValue: "UIKeyboardWillHideNotification"), object: nil)
+            
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                    self.changeBottomTable(height: -keyboardSize.height)
+               }
+           }
+
+   @objc func keyboardWillHide(notification: NSNotification) {
+    if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                self.changeBottomTable(height: keyboardSize.height)
+           }
+       }
+    
+    // анимация для таблицы при вызове клавиатуры
+        private func changeBottomTable(height: CGFloat) {
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.8, options: .curveEaseOut, animations: {
+                self.tableBottomAnchor?.constant = height
+                self.view.layoutIfNeeded()
+            }, completion: nil)
+        }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+            view.endEditing(true)
+
+        }
+    
+    deinit {
+            NotificationCenter.default.removeObserver(self)
+        }
 }

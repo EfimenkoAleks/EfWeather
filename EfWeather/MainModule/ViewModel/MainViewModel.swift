@@ -15,14 +15,15 @@ import MapKit
 protocol MainViewModelProtocol {
     var data: BehaviorRelay<WeatherData> { get set }
     var city: BehaviorRelay<String> { get set }
+    var getLocation: GetLocation { get set }
     func updateLocation(lat: String, lon: String)
-    func findCity(_ str: String) -> String
+    //   func findCity(_ str: String) -> String
     func showMap()
     func showSearch() 
 }
 
 class MainViewModel: MainViewModelProtocol {
-   
+    
     var data: BehaviorRelay<WeatherData>
     var netWorkService: NetWorkServiceProtocol
     var router: RouterProtocol
@@ -31,6 +32,7 @@ class MainViewModel: MainViewModelProtocol {
     var city: BehaviorRelay<String>
     var cityFromCoord: BehaviorRelay<String>
     var disposBag: DisposeBag
+    var getLocation: GetLocation
     
     required init (router: RouterProtocol, netWorkService: NetWorkServiceProtocol) {
         self.netWorkService = netWorkService
@@ -41,23 +43,36 @@ class MainViewModel: MainViewModelProtocol {
         self.city = BehaviorRelay<String>(value: "")
         self.cityFromCoord = BehaviorRelay<String>(value: "")
         self.disposBag = DisposeBag()
+        self.getLocation = GetLocation()
         
-  // следим за изменением lat и lon
-        Observable.combineLatest(self.lat.asObservable(), self.lon.asObservable()).subscribe(onNext: {[weak self] (lat, lon) in
+        self.getLocation.run { [weak self] (location) in
             guard let self = self else { return }
-            self.netWorkService.getWeather(lat: lat, lon: lon) {[weak self] (data) in
-                guard let self = self else { return }
-                if let data = data {
-                self.data.accept(data)
-                }
+            if let location = location {
+                self.updateLocation(lat: location.coordinate.latitude.description, lon: location.coordinate.longitude.description)
+            } else {
+                print("Get Location failed \(String(describing: self.getLocation.failWithError))")
+ // для использования на симуляторе разкоментировать
+                self.updateLocation(lat: "47.84108145851735", lon: "35.14000413966346")
             }
-            self.netWorkService.getCityName(lat: lat, lon: lon) { (dataCity) in
-                guard let name = dataCity?.name else { return }
-                self.city.accept(name)
-            }
-        }).disposed(by: disposBag)
+        }
         
-// подготавливаем данные для ячеек
+        // следим за изменением lat и lon
+        Observable.combineLatest(self.lat.asObservable(), self.lon.asObservable())
+            .subscribe(onNext: {[weak self] (lat, lon) in
+                guard let self = self else { return }
+                self.netWorkService.getWeather(lat: lat, lon: lon) {[weak self] (data) in
+                    guard let self = self else { return }
+                    if let data = data {
+                        self.data.accept(data)
+                    }
+                }
+                self.netWorkService.getCityName(lat: lat, lon: lon) { (dataCity) in
+                    guard let name = dataCity?.name else { return }
+                    self.city.accept(name)
+                }
+            }).disposed(by: self.disposBag)
+        
+        // подготавливаем данные для ячеек
         self.data.subscribe(onNext: { (data) in
             if data.hourly != nil {
                 Helper.shared.dataHorizontalCollectionHelper.accept([SectionModelH(header: data.timezone, items: data.hourly!)])
@@ -65,52 +80,24 @@ class MainViewModel: MainViewModelProtocol {
             if data.daily != nil {
                 Helper.shared.dataVerticalCollectionHelper.accept([SectionModelV(header: data.timezone, items: data.daily!)])
             }
-            }).disposed(by: disposBag)
-      
- // координаты из карты для main и перезагрузка данных
+        }).disposed(by: self.disposBag)
+        
+        // координаты из карты для main и перезагрузка данных
         Helper.shared.coordinateForMian.subscribe(onNext: {[weak self] (event) in
             guard let self = self else { return }
             self.updateLocation(lat: event.latitude.description, lon: event.longitude.description)
-        }).disposed(by: disposBag)
-        
-        self.startLocation()
+        }).disposed(by: self.disposBag)
     }
     
-    func startLocation() {
-        LocationManager.shared.start {[weak self] (info) in
-            guard let self = self else { return }
-            guard let lat = info.latitude else { return }
-            guard let lon = info.longitude else { return }
-            self.updateLocation(lat: lat.description, lon: lon.description)
-        }
-// для запуска на симуляторе , при билде для телефона закоментировать
-        self.updateLocation(lat: "47.84108145851735", lon: "35.14000413966346")
-    }
-   
-    func findCity(_ str: String) -> String {
-        var mySource = ""
-        var separated = false
-        for iChar in str {
-            if iChar == "/" {
-                separated = true
-                continue
-            }
-            if separated {
-               mySource += String(iChar)
-            }
-        }
-        return mySource
-    }
-  
     func updateLocation(lat: String, lon: String) {
         self.lat.accept(lat)
         self.lon.accept(lon)
     }
-// переход на мап контроллер
+    // переход на мап контроллер
     func showMap() {
-  
+        
         if self.lat.value.count > 1 && self.lon.value.count > 1 {
-        let coord = CLLocationCoordinate2D(latitude: CLLocationDegrees(exactly: Double(self.lat.value)!)!, longitude: CLLocationDegrees(exactly: Double(self.lon.value)!)!)
+            let coord = CLLocationCoordinate2D(latitude: CLLocationDegrees(exactly: Double(self.lat.value)!)!, longitude: CLLocationDegrees(exactly: Double(self.lon.value)!)!)
             self.router.showMap(coordinate: coord, router: self.router)
         }
     }
@@ -119,8 +106,5 @@ class MainViewModel: MainViewModelProtocol {
         self.router.showSearch(router: self.router)
     }
     
-    func randomBetweenNumbers(firstNum: CGFloat, secondNum: CGFloat) -> CGFloat{
-    return CGFloat(arc4random()) / CGFloat(UINT32_MAX) * abs(firstNum - secondNum) + min(firstNum, secondNum)}
-
 }
 
