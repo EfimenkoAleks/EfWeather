@@ -15,99 +15,168 @@ import CoreLocation
 class MainViewController: UIViewController {
     
     var viewModel: MainViewModelProtocol!
-    var tableView: MainTableView! //view
+    var mainView: MainView! //view
     var weatherView: CurrentWeatherView!
     let disposBag = DisposeBag()
-    var arrayIdentiferTableCell: [String]!
     var tableTopHewghtAnchor: NSLayoutConstraint?
     var citylabel: UILabel?
+    var curentWidth: CGFloat? // ширина устройства
+    var curentHeight: CGFloat? // высота устройства
+    var heightCellVertical: CGFloat? // высота устройства для вертикальной ячейки
+    
+    // создаём lazy dataSource
+    lazy var dataSourceH: RxCollectionViewSectionedReloadDataSource<SectionModelH> = {
+        let dataSource = RxCollectionViewSectionedReloadDataSource<SectionModelH>(configureCell: { (_, collection, indexPath, item) -> UICollectionViewCell in
+            
+            let cell = collection.dequeueReusableCell(withReuseIdentifier: HorizontalCell.reuseId, for: indexPath) as! HorizontalCell
+            
+            if let temp = item.temp {
+                cell.tempLabel.text = Helper.shared.convertTemp(temp: temp)
+            }
+            if let date = item.dt {
+                cell.timeLabel.text = Helper.shared.timeForHourly(timeDate: date)
+            }
+            guard let weather = item.weather else { return cell}
+            if let icon = weather[0].icon {
+                if Helper.shared.weatherIcon.contains(icon) {
+                    cell.weatherImageView.image = UIImage(named: icon)
+                } else {
+                    cell.weatherImageView.image = UIImage(named: "02d")
+                }
+            }
+            return cell
+        })
+        return dataSource
+    }()
+    
+    lazy var dataSourceV: RxTableViewSectionedReloadDataSource<SectionModelV> = {
+        let dataSource = RxTableViewSectionedReloadDataSource<SectionModelV>(configureCell: { (_, tableView, indexPath, item) -> UITableViewCell in
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: VerticalCell.reuseId, for: indexPath) as! VerticalCell
+            
+            if let day = item.dt {
+                cell.dayLabel.text = Helper.shared.dayForVerticalCell(timeDate: day)
+            }
+            if let night = item.temp?.night {
+                cell.nightTempLabel.text = Helper.shared.convertTemp(temp: night)
+            }
+            if let day = item.temp?.day {
+                cell.dayTempLabel.text = Helper.shared.convertTemp(temp: day)
+            }
+            if let icon = item.weather?[0].icon {
+                if Helper.shared.weatherIcon.contains(icon) {
+                    cell.weatherImageView.image = UIImage(named: icon)
+                } else {
+                    cell.weatherImageView.image = UIImage(named: "02d")
+                }
+                cell.weatherImageView.tintColor = Helper.shared.hexStringToUIColor(hex: "#000000")
+                cell.weatherImageView.backgroundColor = Helper.shared.hexStringToUIColor(hex: "#000000")
+            }
+            return cell
+        })
+        return dataSource
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.createGSize()
+        self.view.backgroundColor = Helper.shared.hexStringToUIColor(hex: "#4A90E2")
+        if self.view.bounds.height > self.view.bounds.width {
+            self.curentHeight = self.view.bounds.height
+            self.curentWidth = self.view.bounds.width
+            self.heightCellVertical = self.view.bounds.height
+        } else {
+            self.curentHeight = self.view.bounds.width
+            self.curentWidth = self.view.bounds.height
+            self.heightCellVertical = self.view.bounds.width
+        }
         self.createBarItem()
-        self.view.backgroundColor = .white
-        self.addWeatherView()
-        self.createTable()
+        self.createTableAndCollection()
         self.bindTable()
     }
     
- // обработка поворота экрана
-    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
-        print("Did rotate \(self.view.bounds.size.width)")
+    // создание таблицы
+    // MARK: Create View table and collection
+    private func createTableAndCollection() {
         
+        guard let height = self.curentHeight else { return }
+        self.mainView = MainView(height: height)
+        self.view.addSubview(self.mainView)
+        mainView.translatesAutoresizingMaskIntoConstraints = false
+        
+        if self.view.bounds.size.width > self.view.bounds.size.height {
+            tableTopHewghtAnchor = mainView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: self.view.bounds.size.height / 8)
+        } else {
+            tableTopHewghtAnchor = mainView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: self.view.bounds.size.height / 2.3)
+        }
+        tableTopHewghtAnchor?.isActive = true
+        mainView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+        mainView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        mainView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        mainView.table.delegate = self
+        mainView.collection.delegate = self
+        // добавляем view текущей погоды
+        if self.view.bounds.width > self.view.bounds.height {
+            self.addWeatherView(hiden: true)
+        } else {
+            self.addWeatherView(hiden: false)
+        }
+    }
+    
+    // создание view текущей погоды
+    private func addWeatherView(hiden: Bool) {
+        guard let height = self.curentHeight else { return }
+        guard let width = self.curentWidth else { return }
+        if self.weatherView == nil {
+            if height > width {
+                self.weatherView = CurrentWeatherView(width: width, height: height)
+            } else {
+                self.weatherView = CurrentWeatherView(width: height, height: width)
+            }
+            self.weatherView.translatesAutoresizingMaskIntoConstraints = false
+            self.view.addSubview(weatherView)
+            
+            weatherView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+            weatherView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+            weatherView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+            weatherView.bottomAnchor.constraint(equalTo: self.mainView.topAnchor).isActive = true
+        }
+        // прячем или показываем view текущей погоды
+        self.weatherView.isHidden = hiden
+    }
+    
+    // обработка поворота экрана
+    //MARK: Rotate device
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         if UIDevice.current.orientation.isLandscape {
             print("Landscape")
-            self.changeHeightView(height: gSizeHeight / 20)
-            gSizeWidthCell = gSizeHeight
-            tableView.layoutIfNeeded()
+            self.changeHeightView(height: size.height / 8, changed: true)
+            self.curentHeight = size.height
+            self.curentWidth = size.width
+            self.addWeatherView(hiden: true)
+            self.mainView.layoutIfNeeded()
         } else {
             print("Portrait")
-            self.changeHeightView(height: gSizeHeight / 10 * 4.3)
-            gSizeWidthCell = gSizeWidth
-            tableView.layoutIfNeeded()
+            self.changeHeightView(height: size.height / 10 * 4.3, changed: false)
+            self.curentHeight = size.height
+            self.curentWidth = size.width
+            self.addWeatherView(hiden: false)
+            self.mainView.layoutIfNeeded()
         }
     }
-// определение начальных размеров экрана
-    private func createGSize() {
-        gSizeWidth = self.view.bounds.size.width
-        gSizeHeight = self.view.bounds.size.height
-        if gSizeWidth > gSizeHeight {
-            gSizeWidth = self.view.bounds.size.height
-            gSizeHeight = self.view.bounds.size.width
-        }
-        gSizeWidthCell = gSizeWidth
-    }
-// анимация для таблицы при повороте
-    private func changeHeightView(height: CGFloat) {
+    
+    // анимация для таблицы при повороте
+    private func changeHeightView(height: CGFloat, changed: Bool) {
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.8, options: .curveEaseOut, animations: {
             self.tableTopHewghtAnchor?.constant = height
+            self.weatherView.isHidden = changed
             self.view.layoutIfNeeded()
         }, completion: nil)
-    }
-// создание таблицы
-    private func createTable() {
-        self.tableView = MainTableView()
-        
-        self.view.addSubview(tableView)
-        self.tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableTopHewghtAnchor = tableView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: gSizeHeight / 10 * 4.3)
-        tableTopHewghtAnchor?.isActive = true
-        tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-        tableView.table.delegate = self
-        tableView.table.dataSource = self
-        
- // создание масива для идентификации ячеек
-        self.arrayIdentiferTableCell = [HorizTableViewCell.reuseId, VerticalTableViewCell.reuseId]
-        
-  // задание начальных размеров для констреинта таблицы
-        if UIDevice.current.orientation.isLandscape {
-            print("Landscape")
-            self.changeHeightView(height: gSizeHeight / 20)
-            gSizeWidthCell = gSizeHeight
-            tableView.layoutIfNeeded()
-        }
-    }
-// создание view текущей погоды
-    private func addWeatherView() {
-        self.weatherView = CurrentWeatherView()
-        self.weatherView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(weatherView)
-        weatherView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-        weatherView.heightAnchor.constraint(equalToConstant: gSizeHeight / 10 * 5).isActive = true
-        weatherView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-        weatherView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-        //        weatherView.bottomAnchor.constraint(equalTo: self.tableView.topAnchor).isActive = true
-        
     }
     
     // MARK: Bind Table
     func bindTable() {
- 
+        
         self.viewModel.data
             .observeOn(MainScheduler.instance)
             .bind {[weak self] (data) in
@@ -128,17 +197,27 @@ class MainViewController: UIViewController {
                 } else {
                     self.weatherView.weatherImageView.image = UIImage(named:"02d")
                 }
-                self.tableView.table.reloadData()
-        }.disposed(by: disposBag)
+            }.disposed(by: disposBag)
         
         self.viewModel.city
-            .asDriver()
-            .drive(onNext: {[weak self] (value) in
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: {[weak self] (value) in
                 guard let self = self else { return }
                 self.citylabel?.text = value
             }).disposed(by: disposBag)
+        
+        self.viewModel.daily
+            .observeOn(MainScheduler.instance)
+            .bind(to: self.mainView.table.rx.items(dataSource: self.dataSourceV))
+            .disposed(by: disposBag)
+        
+        self.viewModel.hourly
+            .observeOn(MainScheduler.instance)
+            .bind(to: self.mainView.collection.rx.items(dataSource: self.dataSourceH))
+            .disposed(by: disposBag)
     }
-// создание barButtonItem
+    // создание barButtonItem
+    // MARK: Create barbuttonItem
     func createBarItem() {
         
         self.navigationController?.navigationBar.isTranslucent = true
@@ -176,8 +255,8 @@ class MainViewController: UIViewController {
         self.viewModel.getLocation.restartLocation()
     }
     
-// переходы на другой контроллер
-// MARK: Transition to another controller
+    // переходы на другой контроллер
+    // MARK: Transition to another controller
     @objc func showMap() {
         self.viewModel.showMap()
     }

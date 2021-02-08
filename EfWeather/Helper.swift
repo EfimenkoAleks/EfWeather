@@ -156,8 +156,8 @@ class Helper {
 }
 
 // глобальные переменные для определения размеров экрана
-var gSizeWidth: CGFloat = 0
-var gSizeWidthCell: CGFloat = 0
-var gSizeHeight: CGFloat = 0
+//var gSizeWidth: CGFloat = 0
+//var gSizeWidthCell: CGFloat = 0
+//var gSizeHeight: CGFloat = 0
 
 

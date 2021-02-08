@@ -8,33 +8,24 @@
 
 import UIKit
 
-extension MainViewController: UITableViewDelegate, UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.arrayIdentiferTableCell.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        switch self.arrayIdentiferTableCell[indexPath.row] {
-        case "HorizTableViewCell":
-            let cell = tableView.dequeueReusableCell(withIdentifier: HorizTableViewCell.reuseId, for: indexPath)
-            
-            return cell
-        default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: VerticalTableViewCell.reuseId, for: indexPath)
-            
-            return cell
-        }
-        
-    }
-    
+extension MainViewController: UITableViewDelegate {
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch self.arrayIdentiferTableCell[indexPath.row] {
-        case "HorizTableViewCell":
-            return gSizeHeight / 4.6
-        default:
-            return gSizeHeight / 2.5
-        }
+        guard let height = self.heightCellVertical else { return 50}
+        return height / 11
     }
+}
+
+extension MainViewController: UICollectionViewDelegate {
+   
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let width = collectionView.frame.width
+        var height: CGFloat = 100
+        if let height1 = self.curentHeight {
+            height = height1
+        }
+        return CGSize(width: width, height: height / 7.5)
+    }
+
 }

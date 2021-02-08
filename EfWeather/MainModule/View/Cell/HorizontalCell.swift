@@ -12,14 +12,9 @@ import UIKit
 class HorizontalCell: UICollectionViewCell {
     
     static var reuseId: String = "HorizontalCell"
-    
-    var bgView: UIView = {
-        let bg = UIView()
-        bg.backgroundColor = .clear
-        bg.translatesAutoresizingMaskIntoConstraints = false
-        return bg
-    }()
-    
+    let edgeIndent: CGFloat = 10 // отступ от края
+    let unitOfSize: CGFloat = 10 // единица размера
+   
     var weatherImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .clear
@@ -65,6 +60,28 @@ class HorizontalCell: UICollectionViewCell {
         return lb
     }()
     
+    var stacView: UIStackView = {
+        let stackV   = UIStackView()
+        stackV.axis  = NSLayoutConstraint.Axis.vertical
+        stackV.distribution  = UIStackView.Distribution.equalSpacing
+        stackV.alignment = UIStackView.Alignment.center
+        stackV.backgroundColor = .clear
+        stackV.translatesAutoresizingMaskIntoConstraints = false
+        stackV.spacing = 15.0
+        return stackV
+    }()
+    
+    var stacViewTime: UIStackView = {
+        let stackV   = UIStackView()
+        stackV.axis  = NSLayoutConstraint.Axis.horizontal
+        stackV.distribution  = UIStackView.Distribution.equalSpacing
+        stackV.alignment = UIStackView.Alignment.lastBaseline
+        stackV.backgroundColor = .clear
+        stackV.translatesAutoresizingMaskIntoConstraints = false
+        stackV.spacing = 2.0
+        return stackV
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.setupConstraints()
@@ -84,36 +101,30 @@ class HorizontalCell: UICollectionViewCell {
 extension HorizontalCell {
     func setupConstraints() {
         
-        addSubview(bgView)
+        contentView.addSubview(stacView)
         
-        bgView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-        bgView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        bgView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        bgView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        stacView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        stacView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+ 
+        stacView.addArrangedSubview(stacViewTime)
+        stacViewTime.addArrangedSubview(timeLabel)
+ 
+        timeLabel.heightAnchor.constraint(equalToConstant: unitOfSize * 2).isActive = true
+        timeLabel.widthAnchor.constraint(equalToConstant: unitOfSize * 3).isActive = true
         
-        bgView.addSubview(weatherImageView)
-        weatherImageView.centerXAnchor.constraint(equalTo: bgView.centerXAnchor).isActive = true
-        weatherImageView.centerYAnchor.constraint(equalTo: bgView.centerYAnchor).isActive = true
-        weatherImageView.widthAnchor.constraint(equalToConstant: gSizeWidth / 8).isActive = true
+        stacViewTime.addArrangedSubview(timeMinLabel)
+ 
+        timeMinLabel.heightAnchor.constraint(equalToConstant: unitOfSize * 2).isActive = true
+        timeMinLabel.widthAnchor.constraint(equalToConstant: unitOfSize * 3).isActive = true
+        
+        stacView.addArrangedSubview(weatherImageView)
+        
+        weatherImageView.widthAnchor.constraint(equalToConstant: unitOfSize * 5).isActive = true
         weatherImageView.heightAnchor.constraint(equalTo: weatherImageView.widthAnchor).isActive = true
         
-        bgView.addSubview(timeLabel)
+        stacView.addArrangedSubview(tempLabel)
         
-        timeLabel.centerXAnchor.constraint(equalTo: bgView.centerXAnchor, constant: -10).isActive = true
-        timeLabel.bottomAnchor.constraint(equalTo: weatherImageView.topAnchor, constant: -20).isActive = true
-        timeLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        timeLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        
-        bgView.addSubview(timeMinLabel)
-        timeMinLabel.centerXAnchor.constraint(equalTo: bgView.centerXAnchor, constant: 25).isActive = true
-        timeMinLabel.bottomAnchor.constraint(equalTo: weatherImageView.topAnchor, constant: -22).isActive = true
-        timeMinLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        timeMinLabel.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        bgView.addSubview(tempLabel)
-        tempLabel.topAnchor.constraint(equalTo: weatherImageView.bottomAnchor, constant: 10).isActive = true
-        tempLabel.centerXAnchor.constraint(equalTo: bgView.centerXAnchor).isActive = true
         tempLabel.heightAnchor.constraint(equalTo: timeLabel.heightAnchor).isActive = true
-        tempLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        tempLabel.widthAnchor.constraint(equalToConstant: unitOfSize * 6).isActive = true
     }
 }

@@ -12,29 +12,29 @@ import RxSwift
 import MapKit
 
 protocol SearchViewModelProtocol {
-    var city: BehaviorRelay<[City]> {get set}
+    var city: Observable<[City]> { get }
     func toRootViewController()
 }
 
 class SearchViewModel: SearchViewModelProtocol {
    
     var router: RouterProtocol
-    var city: BehaviorRelay<[City]>
+    var city: Observable<[City]>
     let disposBag = DisposeBag()
 
     required init (router: RouterProtocol) {
         
         self.router = router
-        self.city = BehaviorRelay(value: [])
+        let _city = BehaviorRelay<[City]>(value: [])
+        self.city = _city.asObservable()
         
         // парсим данные из JSON
         DispatchQueue.global().async {
             Observable.just(self.loadJson())
                 .observeOn(SerialDispatchQueueScheduler(qos: .background))
-                .subscribe(onNext: {[weak self] (city) in
-                    guard let self = self else { return }
+                .subscribe(onNext: { (city) in
                     guard let arrayCity = city else { return }
-                    self.city.accept(arrayCity)
+                    _city.accept(arrayCity)
                 }).disposed(by: self.disposBag)
         }
     }

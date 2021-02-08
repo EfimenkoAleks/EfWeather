@@ -8,15 +8,25 @@
 
 import UIKit
 
-class MainTableView: UIView {
+class MainView: UIView {
     
+    lazy var collection = createcollection()
     lazy var table = createTable()
-      
-      override func layoutSubviews() {
-          super.layoutSubviews()
-        
-        self.table.isHidden = false
-        self.backgroundColor = .clear
+    var curHeight: CGFloat = 0
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    convenience init(height: CGFloat) {
+        self.init()
+        self.curHeight = height
+        self.backgroundColor = .white
         self.table.backgroundColor = .clear
-      }
+        self.collection.backgroundColor = Helper.shared.hexStringToUIColor(hex: "#5A9FF0")
+    }
 }

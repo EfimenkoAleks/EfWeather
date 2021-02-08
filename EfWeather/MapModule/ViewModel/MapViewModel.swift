@@ -13,7 +13,7 @@ import MapKit
 
 protocol MapViewModelProtocol {
     var coordinate: CLLocationCoordinate2D { get set }
-    var user: BehaviorRelay<User> { get set }
+    var user: Observable<User> { get }
     func toRootViewController()
 }
 
@@ -21,13 +21,14 @@ class MapViewModel: MapViewModelProtocol {
    
     var router: RouterProtocol
     var coordinate: CLLocationCoordinate2D
-    var user: BehaviorRelay<User>
+    var user: Observable<User>
 
     required init (coordinate: CLLocationCoordinate2D, router: RouterProtocol) {
        
         self.router = router
         self.coordinate = coordinate
-        self.user = BehaviorRelay<User>(value: User(name: "You", coordinate: self.coordinate))
+        let _user = BehaviorRelay<User>(value: User(name: "You", coordinate: self.coordinate))
+        self.user = _user.asObservable()
     }
     
 // переход на первый контроллер

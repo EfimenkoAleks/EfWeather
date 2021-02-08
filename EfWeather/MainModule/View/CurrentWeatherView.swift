@@ -9,43 +9,12 @@
 import UIKit
 
 class CurrentWeatherView: UIView {
-    
-    var const: CGFloat?
-    
-    var conteinerView: UIView = {
-        let bg = UIView()
-        bg.backgroundColor = .clear
-        bg.translatesAutoresizingMaskIntoConstraints = false
-        return bg
-    }()
-    
-    var conteinerTempView: UIView = {
-        let bg = UIView()
-        bg.backgroundColor = .clear
-        bg.translatesAutoresizingMaskIntoConstraints = false
-        return bg
-    }()
-    
-    var conteinerHumidityView: UIView = {
-        let bg = UIView()
-        bg.backgroundColor = .clear
-        bg.translatesAutoresizingMaskIntoConstraints = false
-        return bg
-    }()
-    
-    var conteinerWindView: UIView = {
-        let bg = UIView()
-        bg.backgroundColor = .clear
-        bg.translatesAutoresizingMaskIntoConstraints = false
-        return bg
-    }()
-    
-    var conteinerContTempView: UIView = {
-        let bg = UIView()
-        bg.backgroundColor = .clear
-        bg.translatesAutoresizingMaskIntoConstraints = false
-        return bg
-    }()
+
+    let edgeIndent: CGFloat = 10 // отступ от края
+    let unitOfSize: CGFloat = 10 // единица размера
+    let dayLabelHeight: CGFloat = 35
+    var curHeight: CGFloat = 0 // высота переданая из контроллера
+    var curWidth: CGFloat = 0 // ширина переданая из контроллера
     
     var weatherImageView: UIImageView = {
         let imageView = UIImageView()
@@ -164,10 +133,82 @@ class CurrentWeatherView: UIView {
         return lb
     }()
     
+    var firstStacView: UIStackView = {
+        let stackV   = UIStackView()
+        stackV.axis  = NSLayoutConstraint.Axis.horizontal
+        stackV.distribution  = UIStackView.Distribution.equalSpacing
+        stackV.alignment = UIStackView.Alignment.center
+        stackV.backgroundColor = .clear
+        stackV.translatesAutoresizingMaskIntoConstraints = false
+        stackV.spacing = 30.0
+        return stackV
+    }()
+    
+    var stacViewConteiner: UIStackView = {
+        let stackV   = UIStackView()
+        stackV.axis  = NSLayoutConstraint.Axis.vertical
+        stackV.distribution  = UIStackView.Distribution.equalSpacing
+        stackV.alignment = UIStackView.Alignment.leading
+        stackV.backgroundColor = .clear
+        stackV.translatesAutoresizingMaskIntoConstraints = false
+        stackV.spacing = 10.0
+        return stackV
+    }()
+    
+    var stacViewTemp: UIStackView = {
+        let stackV   = UIStackView()
+        stackV.axis  = NSLayoutConstraint.Axis.horizontal
+        stackV.distribution  = UIStackView.Distribution.equalSpacing
+        stackV.alignment = UIStackView.Alignment.center
+        stackV.backgroundColor = .clear
+        stackV.translatesAutoresizingMaskIntoConstraints = false
+        stackV.spacing = 8.0
+        return stackV
+    }()
+    
+    var stacViewHumidity: UIStackView = {
+        let stackV   = UIStackView()
+        stackV.axis  = NSLayoutConstraint.Axis.horizontal
+        stackV.distribution  = UIStackView.Distribution.equalSpacing
+        stackV.alignment = UIStackView.Alignment.center
+        stackV.backgroundColor = .clear
+        stackV.translatesAutoresizingMaskIntoConstraints = false
+        stackV.spacing = 8.0
+        return stackV
+    }()
+    
+    var stacViewWind: UIStackView = {
+        let stackV   = UIStackView()
+        stackV.axis  = NSLayoutConstraint.Axis.horizontal
+        stackV.distribution  = UIStackView.Distribution.equalSpacing
+        stackV.alignment = UIStackView.Alignment.center
+        stackV.backgroundColor = .clear
+        stackV.translatesAutoresizingMaskIntoConstraints = false
+        stackV.spacing = 8.0
+        return stackV
+    }()
+    
+    var stacViewContTempView: UIStackView = {
+        let stackV   = UIStackView()
+        stackV.axis  = NSLayoutConstraint.Axis.horizontal
+        stackV.distribution  = UIStackView.Distribution.equalSpacing
+        stackV.alignment = UIStackView.Alignment.center
+        stackV.backgroundColor = .clear
+        stackV.translatesAutoresizingMaskIntoConstraints = false
+//        stackV.spacing = 30.0
+        return stackV
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = Helper.shared.hexStringToUIColor(hex: "#4A90E2") 
-        self.const = gSizeWidth
+
+    }
+    
+    convenience init(width: CGFloat, height: CGFloat) {
+        self.init()
+        self.backgroundColor = Helper.shared.hexStringToUIColor(hex: "#4A90E2")
+        self.curHeight = height
+        self.curWidth = width
         self.createView()
     }
     
@@ -179,45 +220,32 @@ class CurrentWeatherView: UIView {
 extension CurrentWeatherView {
     
     func createView() {
-        self.addSubview(weatherImageView)
-        self.addSubview(conteinerView)
+        
+        self.addSubview(firstStacView)
         self.addSubview(dayLabel)
         
-        dayLabel.widthAnchor.constraint(equalToConstant: 150).isActive = true
-        dayLabel.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        dayLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 20).isActive = true
-        dayLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: gSizeHeight / 10).isActive = true
-        
-        weatherImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: const! / 15).isActive = true
-        weatherImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: -const! / 4).isActive = true
-        weatherImageView.heightAnchor.constraint(equalToConstant: const! / 2.3).isActive = true
+        firstStacView.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: curHeight / 20).isActive = true
+        firstStacView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+
+        firstStacView.addArrangedSubview(weatherImageView)
+        firstStacView.addArrangedSubview(stacViewConteiner)
+ 
+        dayLabel.heightAnchor.constraint(equalToConstant: dayLabelHeight).isActive = true
+        dayLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: edgeIndent * 2).isActive = true
+        dayLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: self.curHeight / 11).isActive = true
+  
+        weatherImageView.heightAnchor.constraint(equalToConstant: curHeight / 5.2).isActive = true
         weatherImageView.widthAnchor.constraint(equalTo: weatherImageView.heightAnchor).isActive = true
-        
-        conteinerView.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: const! / 15).isActive = true
-        conteinerView.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: const! / 4).isActive = true
-        conteinerView.heightAnchor.constraint(equalTo: weatherImageView.heightAnchor).isActive = true
-        conteinerView.widthAnchor.constraint(equalTo: weatherImageView.widthAnchor).isActive = true
-        
-        // Добавляем контейнеры для строк погоды , влажности , ветра
-        conteinerView.addSubview(conteinerTempView)
-        conteinerView.addSubview(conteinerHumidityView)
-        conteinerView.addSubview(conteinerWindView)
-        
-        conteinerTempView.widthAnchor.constraint(equalTo: conteinerView.widthAnchor).isActive = true
-        conteinerTempView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        conteinerTempView.centerXAnchor.constraint(equalTo: conteinerView.centerXAnchor).isActive = true
-        conteinerTempView.bottomAnchor.constraint(equalTo: conteinerHumidityView.topAnchor, constant: -10).isActive = true
-        
-        conteinerHumidityView.widthAnchor.constraint(equalTo: conteinerView.widthAnchor).isActive = true
-        conteinerHumidityView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        conteinerHumidityView.centerXAnchor.constraint(equalTo: conteinerView.centerXAnchor).isActive = true
-        conteinerHumidityView.centerYAnchor.constraint(equalTo: conteinerView.centerYAnchor).isActive = true
-        
-        conteinerWindView.widthAnchor.constraint(equalTo: conteinerView.widthAnchor).isActive = true
-        conteinerWindView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        conteinerWindView.centerXAnchor.constraint(equalTo: conteinerView.centerXAnchor).isActive = true
-        conteinerWindView.topAnchor.constraint(equalTo: conteinerHumidityView.bottomAnchor, constant: 10).isActive = true
-        
+ 
+// Добавляем контейнеры для строк погоды , влажности , ветра
+        stacViewConteiner.addArrangedSubview(stacViewTemp)
+        stacViewConteiner.addArrangedSubview(stacViewHumidity)
+        stacViewConteiner.addArrangedSubview(stacViewWind)
+       
+        stacViewTemp.heightAnchor.constraint(equalToConstant: curHeight / 22).isActive = true
+        stacViewHumidity.heightAnchor.constraint(equalToConstant: curHeight / 22).isActive = true
+        stacViewWind.heightAnchor.constraint(equalToConstant: curHeight / 22).isActive = true
+
         self.temp()
         self.humidity()
         self.wind()
@@ -225,74 +253,56 @@ extension CurrentWeatherView {
     
     private func temp() {
         
-        conteinerTempView.addSubview(tempImageView)
-        conteinerTempView.addSubview(conteinerContTempView)
+        stacViewTemp.addArrangedSubview(tempImageView)
+        stacViewTemp.addArrangedSubview(stacViewContTempView)
         
-        tempImageView.centerYAnchor.constraint(equalTo: conteinerTempView.centerYAnchor).isActive = true
-        tempImageView.widthAnchor.constraint(equalToConstant: const! / 15).isActive = true
-        tempImageView.heightAnchor.constraint(equalTo: tempImageView.widthAnchor).isActive = true
-        tempImageView.leadingAnchor.constraint(equalTo: conteinerTempView.leadingAnchor, constant: 8).isActive = true
+        tempImageView.centerYAnchor.constraint(equalTo: stacViewTemp.centerYAnchor).isActive = true
+        tempImageView.heightAnchor.constraint(equalToConstant: curWidth / 15).isActive = true
+        tempImageView.widthAnchor.constraint(equalTo: tempImageView.heightAnchor).isActive = true
+
+        stacViewContTempView.heightAnchor.constraint(equalTo: tempImageView.heightAnchor).isActive = true
+        stacViewContTempView.centerYAnchor.constraint(equalTo: tempImageView.centerYAnchor).isActive = true
+
+        stacViewContTempView.addArrangedSubview(tempDayLabel)
+        stacViewContTempView.addArrangedSubview(tempSeparateLabel)
+        stacViewContTempView.addArrangedSubview(tempNightLabel)
         
-        conteinerContTempView.widthAnchor.constraint(equalToConstant: const! / 5).isActive = true
-        conteinerContTempView.heightAnchor.constraint(equalTo: conteinerTempView.heightAnchor).isActive = true
-        conteinerContTempView.centerYAnchor.constraint(equalTo: conteinerTempView.centerYAnchor).isActive = true
-        conteinerContTempView.leadingAnchor.constraint(equalTo: tempImageView.trailingAnchor, constant: 0).isActive = true
-        
-        conteinerContTempView.addSubview(tempDayLabel)
-        conteinerContTempView.addSubview(tempSeparateLabel)
-        conteinerContTempView.addSubview(tempNightLabel)
-        
-        tempDayLabel.centerYAnchor.constraint(equalTo: conteinerContTempView.centerYAnchor).isActive = true
-        tempDayLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        tempDayLabel.heightAnchor.constraint(equalTo: conteinerContTempView.heightAnchor).isActive = true
-        tempDayLabel.leadingAnchor.constraint(equalTo: conteinerContTempView.leadingAnchor).isActive = true
-        
-        tempSeparateLabel.centerYAnchor.constraint(equalTo: conteinerContTempView.centerYAnchor).isActive = true
-        tempSeparateLabel.leadingAnchor.constraint(equalTo: tempDayLabel.trailingAnchor).isActive = true
-        tempSeparateLabel.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        tempDayLabel.centerYAnchor.constraint(equalTo: stacViewContTempView.centerYAnchor).isActive = true
+        tempDayLabel.heightAnchor.constraint(equalTo: stacViewContTempView.heightAnchor).isActive = true
+
+        tempSeparateLabel.centerYAnchor.constraint(equalTo: stacViewContTempView.centerYAnchor).isActive = true
+        tempSeparateLabel.widthAnchor.constraint(equalToConstant: unitOfSize * 2).isActive = true
         tempSeparateLabel.heightAnchor.constraint(equalTo: tempDayLabel.heightAnchor).isActive = true
         
-        tempNightLabel.centerYAnchor.constraint(equalTo: conteinerContTempView.centerYAnchor).isActive = true
-        tempNightLabel.widthAnchor.constraint(equalTo: tempDayLabel.widthAnchor).isActive = true
+        tempNightLabel.centerYAnchor.constraint(equalTo: stacViewContTempView.centerYAnchor).isActive = true
         tempNightLabel.heightAnchor.constraint(equalTo: tempDayLabel.heightAnchor).isActive = true
-        tempNightLabel.leadingAnchor.constraint(equalTo: tempSeparateLabel.trailingAnchor).isActive = true
     }
     
     private func humidity() {
         
-        conteinerHumidityView.addSubview(humidityImageView)
-        conteinerHumidityView.addSubview(humidityLabel)
+        stacViewHumidity.addArrangedSubview(humidityImageView)
+        stacViewHumidity.addArrangedSubview(humidityLabel)
         
-        humidityImageView.centerYAnchor.constraint(equalTo: conteinerHumidityView.centerYAnchor).isActive = true
-        humidityImageView.widthAnchor.constraint(equalToConstant: const! / 15).isActive = true
+        humidityImageView.centerYAnchor.constraint(equalTo: stacViewHumidity.centerYAnchor).isActive = true
+        humidityImageView.widthAnchor.constraint(equalToConstant: curWidth / 15).isActive = true
         humidityImageView.heightAnchor.constraint(equalTo: humidityImageView.widthAnchor).isActive = true
-        humidityImageView.leadingAnchor.constraint(equalTo: conteinerHumidityView.leadingAnchor,constant: 8).isActive = true
-        
-        humidityLabel.centerYAnchor.constraint(equalTo: conteinerHumidityView.centerYAnchor).isActive = true
-        humidityLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
-        humidityLabel.heightAnchor.constraint(equalTo: conteinerHumidityView.heightAnchor).isActive = true
-        humidityLabel.leadingAnchor.constraint(equalTo: humidityImageView.trailingAnchor, constant: 10).isActive = true
+
+        humidityLabel.centerYAnchor.constraint(equalTo: stacViewHumidity.centerYAnchor).isActive = true
+        humidityLabel.heightAnchor.constraint(equalTo: stacViewHumidity.heightAnchor).isActive = true
     }
     
     private func wind() {
-        conteinerWindView.addSubview(windImageView)
-        conteinerWindView.addSubview(windLabel)
-        conteinerWindView.addSubview(directionWindImageView)
-        
-        windImageView.centerYAnchor.constraint(equalTo: conteinerWindView.centerYAnchor).isActive = true
-        windImageView.widthAnchor.constraint(equalToConstant: const! / 15).isActive = true
+        stacViewWind.addArrangedSubview(windImageView)
+        stacViewWind.addArrangedSubview(windLabel)
+        stacViewWind.addArrangedSubview(directionWindImageView)
+       
+        windImageView.widthAnchor.constraint(equalToConstant: curWidth / 15).isActive = true
         windImageView.heightAnchor.constraint(equalTo: windImageView.widthAnchor).isActive = true
-        windImageView.leadingAnchor.constraint(equalTo: conteinerWindView.leadingAnchor, constant: 8).isActive = true
-        
-        windLabel.centerYAnchor.constraint(equalTo: conteinerWindView.centerYAnchor).isActive = true
-        windLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        windLabel.heightAnchor.constraint(equalTo: conteinerWindView.heightAnchor).isActive = true
-        windLabel.leadingAnchor.constraint(equalTo: windImageView.trailingAnchor, constant: 10).isActive = true
-        
-        directionWindImageView.centerYAnchor.constraint(equalTo: conteinerWindView.centerYAnchor).isActive = true
-        directionWindImageView.widthAnchor.constraint(equalTo: conteinerWindView.heightAnchor).isActive = true
+   
+        windLabel.heightAnchor.constraint(equalTo: stacViewWind.heightAnchor).isActive = true
+ 
+        directionWindImageView.widthAnchor.constraint(equalTo: stacViewWind.heightAnchor).isActive = true
         directionWindImageView.heightAnchor.constraint(equalTo: directionWindImageView.widthAnchor).isActive = true
-        directionWindImageView.leadingAnchor.constraint(equalTo: windLabel.trailingAnchor, constant: 8).isActive = true
     }
     
 }

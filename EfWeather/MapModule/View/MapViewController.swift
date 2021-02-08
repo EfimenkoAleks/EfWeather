@@ -26,13 +26,14 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
         self.setMap()
         self.mapView?.delegate = self
         self.addGesture()
+        self.castomBarBeckButton()
+        self.checkLocationEnable()
         
+// добавляем юзера на курту
         self.viewModel.user.subscribe(onNext: {[weak self] (user) in
             guard let self = self else { return }
             self.mapView?.addAnnotation(user)
         }).disposed(by: self.disposBag)
-        self.castomBarBeckButton()
-        self.checkLocationEnable()
     }
     
     override func viewDidAppear(_ animated: Bool) {

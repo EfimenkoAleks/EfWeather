@@ -13,38 +13,58 @@ import RxDataSources
 import MapKit
 
 protocol MainViewModelProtocol {
-    var data: BehaviorRelay<WeatherData> { get set }
-    var city: BehaviorRelay<String> { get set }
-    var getLocation: GetLocation { get set }
-    func updateLocation(lat: String, lon: String)
-    //   func findCity(_ str: String) -> String
+    var data: Observable<WeatherData> { get }
+    var city: Observable<String> { get }
+    var daily: Observable<[SectionModelV]> { get }
+    var hourly: Observable<[SectionModelH]> { get }
+    var getLocation: GetLocation { get }
     func showMap()
     func showSearch() 
 }
 
 class MainViewModel: MainViewModelProtocol {
     
-    var data: BehaviorRelay<WeatherData>
+    var data: Observable<WeatherData>
     var netWorkService: NetWorkServiceProtocol
     var router: RouterProtocol
     var lat: BehaviorRelay<String>
     var lon: BehaviorRelay<String>
-    var city: BehaviorRelay<String>
+    var city: Observable<String>
     var cityFromCoord: BehaviorRelay<String>
+    var daily: Observable<[SectionModelV]>
+    var hourly: Observable<[SectionModelH]>
     var disposBag: DisposeBag
     var getLocation: GetLocation
     
     required init (router: RouterProtocol, netWorkService: NetWorkServiceProtocol) {
         self.netWorkService = netWorkService
         self.router = router
-        self.data = BehaviorRelay(value: WeatherData(lat: nil, lon: nil, timezone: nil, timezone_offset: nil, current: nil, hourly: nil, daily: nil))
+        let _data = BehaviorRelay(value: WeatherData.empty)
+        self.data = _data.asObservable()
         self.lat = BehaviorRelay<String>(value: "")
         self.lon = BehaviorRelay<String>(value: "")
-        self.city = BehaviorRelay<String>(value: "")
+        let _city = BehaviorRelay<String>(value: "")
+        self.city = _city.asObservable()
         self.cityFromCoord = BehaviorRelay<String>(value: "")
+        
+        let _daily = BehaviorRelay<[Daily]>(value: [Daily(dt: nil, sunrise: nil, sunset: nil, temp: nil, feels_like: nil, pressure: nil, humidity: nil, dew_point: nil, wind_speed: nil, wind_deg: nil, weather: nil, clouds: nil, pop: nil, rain: nil, uvi: nil)])
+        self.daily = _daily.asObservable()
+            .map({ (daily) -> [SectionModelV] in
+                let arrayList = [SectionModelV(header: "Daily", items: daily)]
+                return arrayList
+        })
+        
+        let _hourlyVM = BehaviorRelay<[Hourly]>(value: [Hourly(dt: nil, temp: nil, feels_like: nil, pressure: nil, humidity: nil, dew_point: nil, uvi: nil, clouds: nil, visibility: nil, wind_speed: nil, wind_deg: nil, weather: nil, pop: nil)])
+        self.hourly = _hourlyVM.asObservable()
+            .map({ (hourly) -> [SectionModelH] in
+                let arrayList = [SectionModelH(header: "Daily", items: hourly)]
+                return arrayList
+            })
+        
         self.disposBag = DisposeBag()
         self.getLocation = GetLocation()
-        
+ 
+ // запускаем определение локейшен
         self.getLocation.run { [weak self] (location) in
             guard let self = self else { return }
             if let location = location {
@@ -56,33 +76,31 @@ class MainViewModel: MainViewModelProtocol {
             }
         }
         
-        // следим за изменением lat и lon
+// следим за изменением lat и lon
         Observable.combineLatest(self.lat.asObservable(), self.lon.asObservable())
             .subscribe(onNext: {[weak self] (lat, lon) in
                 guard let self = self else { return }
-                self.netWorkService.getWeather(lat: lat, lon: lon) {[weak self] (data) in
-                    guard let self = self else { return }
+                self.netWorkService.getWeather(lat: lat, lon: lon) { (data) in
                     if let data = data {
-                        self.data.accept(data)
+                        _data.accept(data)
                     }
                 }
                 self.netWorkService.getCityName(lat: lat, lon: lon) { (dataCity) in
                     guard let name = dataCity?.name else { return }
-                    self.city.accept(name)
+                    _city.accept(name)
                 }
             }).disposed(by: self.disposBag)
         
-        // подготавливаем данные для ячеек
+// подготавливаем данные для ячеек
         self.data.subscribe(onNext: { (data) in
-            if data.hourly != nil {
-                Helper.shared.dataHorizontalCollectionHelper.accept([SectionModelH(header: data.timezone, items: data.hourly!)])
-            }
-            if data.daily != nil {
-                Helper.shared.dataVerticalCollectionHelper.accept([SectionModelV(header: data.timezone, items: data.daily!)])
-            }
+            guard let dataHourly = data.hourly else { return }
+            _hourlyVM.accept(dataHourly)
+            
+            guard let dataDaily = data.daily else { return }
+            _daily.accept(dataDaily)
         }).disposed(by: self.disposBag)
         
-        // координаты из карты для main и перезагрузка данных
+// координаты из карты для main и перезагрузка данных
         Helper.shared.coordinateForMian.subscribe(onNext: {[weak self] (event) in
             guard let self = self else { return }
             self.updateLocation(lat: event.latitude.description, lon: event.longitude.description)
