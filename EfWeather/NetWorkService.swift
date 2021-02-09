@@ -8,66 +8,101 @@
 
 import Foundation
 
+// протокол для нетворк сервиса
 protocol NetWorkServiceProtocol {
-    func getWeather(lat: String, lon: String, completion: @escaping (WeatherData?) -> Void)
-    func getCityName(lat: String, lon: String, completion: @escaping (WeatherCity?) -> Void)
+    func getWeather(lat: String, lon: String, completion: @escaping (Result<WeatherData>) -> Void)
+    func getCityName(lat: String, lon: String, completion: @escaping (Result<WeatherCity>) -> Void)
+}
+// дженерик для результата запроса
+enum Result<T> {
+    case success(T)
+    case failure(Error)
+}
+
+enum APIError: Error {
+    case noData
+}
+// определение ресурса для запроса
+struct Resource {
+    let url: URL
+    let method: String = "GET"
 }
 
 class NetWorkService: NetWorkServiceProtocol {
-    
-    func getWeather(lat: String, lon: String, completion: @escaping (WeatherData?) -> Void) {
-
-         let curentlat = "lat=" + lat + "&"
-        let curentlon = "lon=" + lon + "&"
- let requestStr = "https://api.openweathermap.org/data/2.5/onecall?" + curentlat + curentlon + "exclude=minutely&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab"
-        
-         let request = NSMutableURLRequest(url: NSURL(string: requestStr)! as URL,
-                                           cachePolicy: .useProtocolCachePolicy,
-                                           timeoutInterval: 10.0)
-         request.httpMethod = "GET"
-         
-         let session = URLSession.shared
-         let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, _, error) -> Void in
-             if (error != nil) {
-                 print(error ?? "error")
-             } else {
-                guard let dataRez = data else { return }
-                let parsedResult: WeatherData = try! JSONDecoder().decode(WeatherData.self, from: dataRez)
-                print("\(parsedResult)")
-                 completion(parsedResult)
-             }
-         })
-         
-         dataTask.resume()
+ 
+// приватная функция для запроса данных
+    private func load(_ resource: Resource, result: @escaping ((Result<Data>) -> Void)) {
+        let request = URLRequest(resource)
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard let `data` = data else {
+                result(.failure(APIError.noData))
+                return
+            }
+            if let `error` = error {
+                result(.failure(error))
+                return
+            }
+            result(.success(data))
+        }
+        task.resume()
     }
- // запрос чтоб получить город
-      func getCityName(lat: String, lon: String, completion: @escaping (WeatherCity?) -> Void) {
-
-            let curentlat = "lat=" + lat + "&"
-           let curentlon = "lon=" + lon + "&"
-    let requestStr = "https://api.openweathermap.org/data/2.5/weather?" + curentlat + curentlon + "&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab"
+// получить погоду
+    func getWeather(lat: String, lon: String, completion: @escaping (Result<WeatherData>) -> Void) {
         
-//        https://api.openweathermap.org/data/2.5/weather?lat=47.84108145851735&lon=35.14000413966346&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab
+        let curentlat = "lat=" + lat + "&"
+        let curentlon = "lon=" + lon + "&"
+        let requestStr = "https://api.openweathermap.org/data/2.5/onecall?" + curentlat + curentlon + "exclude=minutely&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab"
         
-// https://api.openweathermap.org/data/2.5/onecall?lat=47.84108145851735&lon=35.14000413966346&exclude=minutely&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab
-           
-            let request = NSMutableURLRequest(url: NSURL(string: requestStr)! as URL,
-                                              cachePolicy: .useProtocolCachePolicy,
-                                              timeoutInterval: 10.0)
-            request.httpMethod = "GET"
-            
-            let session = URLSession.shared
-            let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, _, error) -> Void in
-                if (error != nil) {
-                    print(error ?? "error")
-                } else {
-                   guard let dataRez = data else { return }
-                   let parsedResult: WeatherCity = try! JSONDecoder().decode(WeatherCity.self, from: dataRez)
-                   print("\(parsedResult)")
-                    completion(parsedResult)
+        guard let url = URL(string: requestStr) else { return }
+        let resorce = Resource(url: url)
+        
+        self.load(resorce) { (result) in
+            switch result {
+            case .success(let data):
+                do {
+                    let parsedResult: WeatherData = try JSONDecoder().decode(WeatherData.self, from: data)
+                    print("\(parsedResult)")
+                    completion(.success(parsedResult))
+                } catch {
+                    completion(.failure(error))
                 }
-            })
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+// запрос чтоб получить город
+    func getCityName(lat: String, lon: String, completion: @escaping (Result<WeatherCity>) -> Void) {
+        
+        let curentlat = "lat=" + lat + "&"
+        let curentlon = "lon=" + lon + "&"
+        let requestStr = "https://api.openweathermap.org/data/2.5/weather?" + curentlat + curentlon + "&units=metric&lang=ru&appid=9235dd62d3f74c7814a8a04526e91cab"
+        
+        guard let url = URL(string: requestStr) else { return }
+        let resorce = Resource(url: url)
+        self.load(resorce) { (result) in
+            switch result {
             
-            dataTask.resume()
-       }
+            case .success(let data):
+                do {
+                    let parsedResult: WeatherCity = try JSONDecoder().decode(WeatherCity.self, from: data)
+                    print("\(parsedResult)")
+                    completion(.success(parsedResult))
+                } catch {
+                    completion(.failure(error))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+}
+// расширение для URLRequest чтоб передать url и метод
+extension URLRequest {
+    
+    init(_ resource: Resource) {
+        self.init(url: resource.url)
+        self.httpMethod = resource.method
+    }
 }

@@ -9,7 +9,6 @@
 import UIKit
 import RxSwift
 import RxCocoa
-import RxDataSources
 import CoreLocation
 
 class Helper {
@@ -17,8 +16,7 @@ class Helper {
     static let shared = Helper()
   
 // переменные для передачи данных между контролерами
-    var dataHorizontalCollectionHelper = BehaviorRelay<[SectionModelH]>(value: [])
-    var dataVerticalCollectionHelper = BehaviorRelay<[SectionModelV]>(value: [])
+
     var coordinateForMian = PublishSubject<CLLocationCoordinate2D>()
     var cityForMain = BehaviorRelay<City?>(value: nil)
     
@@ -154,10 +152,4 @@ class Helper {
     
     
 }
-
-// глобальные переменные для определения размеров экрана
-//var gSizeWidth: CGFloat = 0
-//var gSizeWidthCell: CGFloat = 0
-//var gSizeHeight: CGFloat = 0
-
 
