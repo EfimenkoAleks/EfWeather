@@ -17,6 +17,7 @@ protocol MainViewModelProtocol {
     var city: Observable<String> { get }
     var daily: Observable<[SectionModelV]> { get }
     var hourly: Observable<[SectionModelH]> { get }
+    var failurData: Observable<String> { get }
     var getLocation: GetLocation { get }
     func showMap()
     func showSearch() 
@@ -33,6 +34,7 @@ class MainViewModel: MainViewModelProtocol {
     var cityFromCoord: BehaviorRelay<String>
     var daily: Observable<[SectionModelV]>
     var hourly: Observable<[SectionModelH]>
+    var failurData: Observable<String>
     var disposBag: DisposeBag
     var getLocation: GetLocation
     
@@ -45,6 +47,8 @@ class MainViewModel: MainViewModelProtocol {
         self.lon = BehaviorRelay<String>(value: "")
         let _city = BehaviorRelay<String>(value: "")
         self.city = _city.asObservable()
+        let _failurData = BehaviorRelay<String>(value: "")
+        self.failurData = _failurData.asObservable()
         self.cityFromCoord = BehaviorRelay<String>(value: "")
         
         let _daily = BehaviorRelay<[Daily]>(value: [Daily(dt: nil, sunrise: nil, sunset: nil, temp: nil, feels_like: nil, pressure: nil, humidity: nil, dew_point: nil, wind_speed: nil, wind_deg: nil, weather: nil, clouds: nil, pop: nil, rain: nil, uvi: nil)])
@@ -52,7 +56,7 @@ class MainViewModel: MainViewModelProtocol {
             .map({ (daily) -> [SectionModelV] in
                 let arrayList = [SectionModelV(header: "Daily", items: daily)]
                 return arrayList
-        })
+            })
         
         let _hourlyVM = BehaviorRelay<[Hourly]>(value: [Hourly(dt: nil, temp: nil, feels_like: nil, pressure: nil, humidity: nil, dew_point: nil, uvi: nil, clouds: nil, visibility: nil, wind_speed: nil, wind_deg: nil, weather: nil, pop: nil)])
         self.hourly = _hourlyVM.asObservable()
@@ -63,35 +67,46 @@ class MainViewModel: MainViewModelProtocol {
         
         self.disposBag = DisposeBag()
         self.getLocation = GetLocation()
- 
- // запускаем определение локейшен
+        
+        // запускаем определение локейшен
         self.getLocation.run { [weak self] (location) in
             guard let self = self else { return }
             if let location = location {
                 self.updateLocation(lat: location.coordinate.latitude.description, lon: location.coordinate.longitude.description)
             } else {
                 print("Get Location failed \(String(describing: self.getLocation.failWithError))")
- // для использования на симуляторе разкоментировать
+                // для использования на симуляторе разкоментировать
                 self.updateLocation(lat: "47.84108145851735", lon: "35.14000413966346")
             }
         }
         
-// следим за изменением lat и lon
+        // следим за изменением lat и lon
         Observable.combineLatest(self.lat.asObservable(), self.lon.asObservable())
             .subscribe(onNext: {[weak self] (lat, lon) in
                 guard let self = self else { return }
-                self.netWorkService.getWeather(lat: lat, lon: lon) { (data) in
-                    if let data = data {
-                        _data.accept(data)
+                self.netWorkService.getWeather(lat: lat, lon: lon) { (result) in
+                    switch result {
+                    
+                    case .success(let weatherData):
+                        _data.accept(weatherData)
+                    case .failure(let error):
+                        print("\(error.localizedDescription)")
+                        _failurData.accept(error.localizedDescription)
                     }
                 }
-                self.netWorkService.getCityName(lat: lat, lon: lon) { (dataCity) in
-                    guard let name = dataCity?.name else { return }
-                    _city.accept(name)
+                self.netWorkService.getCityName(lat: lat, lon: lon) { (result) in
+                    switch result {
+                    
+                    case .success(let dataCity):
+                        guard let name = dataCity.name else { return }
+                        _city.accept(name)
+                    case .failure(let error):
+                        print("\(error.localizedDescription)")
+                    }
                 }
             }).disposed(by: self.disposBag)
         
-// подготавливаем данные для ячеек
+        // подготавливаем данные для ячеек
         self.data.subscribe(onNext: { (data) in
             guard let dataHourly = data.hourly else { return }
             _hourlyVM.accept(dataHourly)
@@ -100,7 +115,7 @@ class MainViewModel: MainViewModelProtocol {
             _daily.accept(dataDaily)
         }).disposed(by: self.disposBag)
         
-// координаты из карты для main и перезагрузка данных
+        // координаты из карты для main и перезагрузка данных
         Helper.shared.coordinateForMian.subscribe(onNext: {[weak self] (event) in
             guard let self = self else { return }
             self.updateLocation(lat: event.latitude.description, lon: event.longitude.description)

@@ -215,7 +215,26 @@ class MainViewController: UIViewController {
             .observeOn(MainScheduler.instance)
             .bind(to: self.mainView.collection.rx.items(dataSource: self.dataSourceH))
             .disposed(by: disposBag)
+        
+        self.viewModel.failurData
+            .subscribe {[weak self] (_) in
+                guard let self = self else { return }
+                self.failurDataAlert()
+            }.disposed(by: disposBag)
+
     }
+    
+    private func failurDataAlert() {
+        let title = "Something went wrong with the data"
+        let alert = UIAlertController(title: title, message: "", preferredStyle: .alert)
+       
+        let OKAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        
+        alert.addAction(OKAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
     // создание barButtonItem
     // MARK: Create barbuttonItem
     func createBarItem() {
