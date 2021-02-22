@@ -11,20 +11,19 @@ import RxCocoa
 import RxSwift
 import MapKit
 
-protocol SearchViewModelProtocol {
+protocol SearchViewModelProtocol: class {
     var city: Observable<[City]> { get }
-    func toRootViewController()
 }
 
 class SearchViewModel: SearchViewModelProtocol {
    
-    var router: RouterProtocol
+//    var router: RouterProtocol
     var city: Observable<[City]>
     let disposBag = DisposeBag()
 
-    required init (router: RouterProtocol) {
+    required init () {
         
-        self.router = router
+//        self.router = router
         let _city = BehaviorRelay<[City]>(value: [])
         self.city = _city.asObservable()
         
@@ -50,10 +49,5 @@ class SearchViewModel: SearchViewModelProtocol {
            return nil
       }
       return city
-    }
-    
-// переход на первый контроллер
-    func toRootViewController() {
-        self.router.popToRoot()
     }
 }

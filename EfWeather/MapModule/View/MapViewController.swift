@@ -14,11 +14,17 @@ import RxSwift
 class MapViewController: UIViewController, UIGestureRecognizerDelegate {
     
     var viewModel: MapViewModelProtocol!
+    var router: Router!
     var mapView: MKMapView?
     let locationManager = GetLocation()
     var location: CLLocation?
     var disposBag = DisposeBag()
     var mapItem: MKMapItem?
+    var callback: ((CLLocationCoordinate2D) -> ())?
+    
+    enum Route: String {
+        case rootToMain
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,19 +77,21 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
 // добавляем жест для выбора города
     func addGesture(){
         let lpgr = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.handleLongPress(_:)))
+        guard let mapview = mapView else { return }
         lpgr.minimumPressDuration = 0.5
         lpgr.delaysTouchesBegan = true
         lpgr.delegate = self
-        self.mapView!.addGestureRecognizer(lpgr)
+        mapview.addGestureRecognizer(lpgr)
     }
     
     @objc func handleLongPress(_ gestureReconizer: UILongPressGestureRecognizer) {
         if gestureReconizer.state != UIGestureRecognizer.State.ended {
-            let touchLocation = gestureReconizer.location(in: mapView)
-            let locationCoordinate = mapView!.convert(touchLocation,toCoordinateFrom: mapView)
-            Helper.shared.coordinateForMian.onNext(locationCoordinate)
+            guard let mapview = mapView else { return }
+            let touchLocation = gestureReconizer.location(in: mapview)
+            let locationCoordinate = mapview.convert(touchLocation,toCoordinateFrom: mapview)
             
-            self.viewModel.toRootViewController()
+            callback?(locationCoordinate)
+            self.router.route(to: Route.rootToMain.rawValue, from: self, parameters: nil)
             return
         }
         if gestureReconizer.state != UIGestureRecognizer.State.began {

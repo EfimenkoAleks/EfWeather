@@ -12,22 +12,23 @@ import RxSwift
 import RxDataSources
 import MapKit
 
-protocol MainViewModelProtocol {
+protocol MainViewModelProtocol: class {
     var data: Observable<WeatherData> { get }
     var city: Observable<String> { get }
     var daily: Observable<[SectionModelV]> { get }
     var hourly: Observable<[SectionModelH]> { get }
     var failurData: Observable<String> { get }
     var getLocation: GetLocation { get }
-    func showMap()
-    func showSearch() 
+//    func showMap()
+    func updateLocation(lat: String, lon: String)
+    func showCoordinate() -> CLLocationCoordinate2D
 }
 
 class MainViewModel: MainViewModelProtocol {
     
     var data: Observable<WeatherData>
     var netWorkService: NetWorkServiceProtocol
-    var router: RouterProtocol
+//    var router: RouterProtocol
     var lat: BehaviorRelay<String>
     var lon: BehaviorRelay<String>
     var city: Observable<String>
@@ -38,9 +39,9 @@ class MainViewModel: MainViewModelProtocol {
     var disposBag: DisposeBag
     var getLocation: GetLocation
     
-    required init (router: RouterProtocol, netWorkService: NetWorkServiceProtocol) {
+    required init (netWorkService: NetWorkServiceProtocol) {
         self.netWorkService = netWorkService
-        self.router = router
+//        self.router = router
         let _data = BehaviorRelay(value: WeatherData.empty)
         self.data = _data.asObservable()
         self.lat = BehaviorRelay<String>(value: "")
@@ -114,30 +115,20 @@ class MainViewModel: MainViewModelProtocol {
             guard let dataDaily = data.daily else { return }
             _daily.accept(dataDaily)
         }).disposed(by: self.disposBag)
-        
-        // координаты из карты для main и перезагрузка данных
-        Helper.shared.coordinateForMian.subscribe(onNext: {[weak self] (event) in
-            guard let self = self else { return }
-            self.updateLocation(lat: event.latitude.description, lon: event.longitude.description)
-        }).disposed(by: self.disposBag)
     }
     
     func updateLocation(lat: String, lon: String) {
         self.lat.accept(lat)
         self.lon.accept(lon)
     }
-    // переход на мап контроллер
-    func showMap() {
-        
+    // подготовка данных для мап контроллера
+    func showCoordinate() -> CLLocationCoordinate2D {
+
         if self.lat.value.count > 1 && self.lon.value.count > 1 {
             let coord = CLLocationCoordinate2D(latitude: CLLocationDegrees(exactly: Double(self.lat.value)!)!, longitude: CLLocationDegrees(exactly: Double(self.lon.value)!)!)
-            self.router.showMap(coordinate: coord, router: self.router)
+            return coord
         }
+        return CLLocationCoordinate2D(latitude: 47.84108145851735, longitude: 35.14000413966346)
     }
-    
-    func showSearch() {
-        self.router.showSearch(router: self.router)
-    }
-    
 }
 

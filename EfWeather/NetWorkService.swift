@@ -34,11 +34,11 @@ class NetWorkService: NetWorkServiceProtocol {
     private func load(_ resource: Resource, result: @escaping ((Result<Data>) -> Void)) {
         let request = URLRequest(resource)
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-            guard let `data` = data else {
+            guard let data = data else {
                 result(.failure(APIError.noData))
                 return
             }
-            if let `error` = error {
+            if let error = error {
                 result(.failure(error))
                 return
             }
@@ -61,9 +61,9 @@ class NetWorkService: NetWorkServiceProtocol {
             case .success(let data):
                 do {
                     let parsedResult: WeatherData = try JSONDecoder().decode(WeatherData.self, from: data)
-                    print("\(parsedResult)")
+                   // print("\(parsedResult)")
                     completion(.success(parsedResult))
-                } catch {
+                } catch let error {
                     completion(.failure(error))
                 }
             case .failure(let error):
@@ -89,7 +89,7 @@ class NetWorkService: NetWorkServiceProtocol {
                     let parsedResult: WeatherCity = try JSONDecoder().decode(WeatherCity.self, from: data)
                     print("\(parsedResult)")
                     completion(.success(parsedResult))
-                } catch {
+                } catch let error {
                     completion(.failure(error))
                 }
             case .failure(let error):

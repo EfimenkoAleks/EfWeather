@@ -15,6 +15,7 @@ import CoreLocation
 class MainViewController: UIViewController {
     
     var viewModel: MainViewModelProtocol!
+    var router: Router!
     var mainView: MainView! //view
     var weatherView: CurrentWeatherView!
     let disposBag = DisposeBag()
@@ -24,6 +25,10 @@ class MainViewController: UIViewController {
     var curentHeight: CGFloat? // высота устройства
     var heightCellVertical: CGFloat? // высота устройства для вертикальной ячейки
     
+    enum Route: String {
+          case map
+          case search
+       }
     // создаём lazy dataSource
     lazy var dataSourceH: RxCollectionViewSectionedReloadDataSource<SectionModelH> = {
         let dataSource = RxCollectionViewSectionedReloadDataSource<SectionModelH>(configureCell: { (_, collection, indexPath, item) -> UICollectionViewCell in
@@ -217,9 +222,12 @@ class MainViewController: UIViewController {
             .disposed(by: disposBag)
         
         self.viewModel.failurData
-            .subscribe {[weak self] (_) in
+            .subscribe {[weak self] (value) in
                 guard let self = self else { return }
-                self.failurDataAlert()
+                guard let value = value.element else { return }
+                if value.count > 0 {
+                    self.failurDataAlert()
+                }
             }.disposed(by: disposBag)
 
     }
@@ -276,12 +284,12 @@ class MainViewController: UIViewController {
     
     // переходы на другой контроллер
     // MARK: Transition to another controller
-    @objc func showMap() {
-        self.viewModel.showMap()
-    }
     
+    @objc func showMap() {
+        router.route(to: Route.map.rawValue, from: self, parameters: self.viewModel.showCoordinate())
+       }
     @objc func showSearch() {
-        self.viewModel.showSearch()
-    }
+        router.route(to: Route.search.rawValue, from: self, parameters: nil)
+       }
     
 }
