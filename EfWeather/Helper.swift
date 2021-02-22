@@ -14,12 +14,7 @@ import CoreLocation
 class Helper {
     
     static let shared = Helper()
-  
-// переменные для передачи данных между контролерами
 
-    var coordinateForMian = PublishSubject<CLLocationCoordinate2D>()
-    var cityForMain = BehaviorRelay<City?>(value: nil)
-    
 // масив названий icon для image cell
     let weatherIcon = ["01d", "01n", "02d", "02n", "03d", "03n", "04d", "04n", "09d", "09n", "10d", "10n", "11d", "11n", "13d", "13n", "50d", "50n"]
     
@@ -117,7 +112,7 @@ class Helper {
     func timeForHourly(timeDate: Double) -> String {
         let date = Date(timeIntervalSince1970: timeDate)
         let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(abbreviation: "EDT")
+        dateFormatter.timeZone = .current
         dateFormatter.locale = NSLocale.current
         dateFormatter.dateFormat = "HH"
         let strTime = dateFormatter.string(from: date)

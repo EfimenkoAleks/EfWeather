@@ -14,6 +14,7 @@ import RxSwift
 class SearchViewController: UIViewController {
     
     var viewModel: SearchViewModelProtocol!
+    var router: Router!
     var tableView: SearchTable!
     var arrayCity: BehaviorRelay<[City]>!
     var filtredArray: [City]!
@@ -21,6 +22,7 @@ class SearchViewController: UIViewController {
     var swichActivity: Bool!
     let disposBag = DisposeBag()
     var tableBottomAnchor: NSLayoutConstraint?
+    var callback: ((CLLocationCoordinate2D) -> ())?
     private var searchBarIsEmpty: Bool {
         guard let text = searchController.searchBar.text else { return false }
         return text.isEmpty
@@ -32,6 +34,10 @@ class SearchViewController: UIViewController {
     let searchController = UISearchController(searchResultsController: nil)
     
     var searchSource: [String]?
+    
+    enum Route: String {
+        case popToRoot
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
